@@ -1,2 +1,3 @@
-# talks
-Slides and accompanying materials for talks
+# Talks
+
+This repository contains slides and accompanying materials for past, present and future talks.

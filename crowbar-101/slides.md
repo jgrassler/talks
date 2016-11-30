@@ -35,13 +35,12 @@ talk to this REST API - much like the OpenStack CLI clients.
 
 * Easily extensible through *bar clamps*, one per OpenStack component
 
-* Chef based configuration management for all supported services
-
 * Pick and chose from the barclamps you actually need
 
 <!--
 
-Let's have a look at Crowbar's features.
+Let's have a look at Crowbar's features now and get a feel for what it can and
+cannot do.
 
 First of all, it can deal with mostly unprepared bare metal machines. All they
 need to do is attempt to PXE boot. Crowbar will then automatically discover
@@ -54,17 +53,47 @@ is a plugin for configuring a service, such as OpenStack Nova. Note that a
 service in this case can be - and usually is - a distributed system of multiple
 different daemons running on multiple different machines.
 
+Crowbar allows you to mix and match barclamps depending to a certain extent.
+Concretely, if you use it to deploy an OpenStack cloud you can chose to deploy
+only the services you want to deploy. For instance, you could omit Swift if you
+don't need object storage.
+
 -->
 
 ## Barclamps: Crowbar's Configuration Modules
 
-* Chef recipes for configuration management
+* Chef cookbooks for configuration management
 
 * Default parameters for chef recipes from *data bags*: JSON data with schema
 
 * Barclamp view in Crowbar Web UI for customizing parameters
 
 * Validation code and UI elements in Rails application
+
+<!--
+
+Now that we have a general idea of what a barclamp is, we can have a closer
+look at the implementation details. Barclamps consist of various components:
+
+First and foremost they contain a chef cookbooks that is used for deploying the
+service the barclamp is in charge of. Usually this chef cookbook consists of
+multiple recipes. There may be dedicated recipes for deploying the API and
+backend services, or for creating keystone and database users, for instance.
+Services such as Neutron, Nova or Cinder will also have role recipes
+aggregating the daemons and agents running on compute nodes and controllers,
+respectively.
+
+These chef recipes are not static of course. They can be parametrized through
+Crowbar. We've got a fair amount of knobs and dials to adjust there - according
+to a colleague who recently did a presentation on Crowbar we currently have
+about 1500 individual settings across Crowbar. Since setting all of these
+explicitely would be quite a burden on the user we provide sensible defaults in
+the shape of `data bags`. The data bag for a barclamp consists of a JSON
+formatted data structure with all the default settings and a JSON formatted
+schema file which defines the data type and optional validation constraints for
+each setting.
+
+-->
 
 ## Web UI workflow (1)
 

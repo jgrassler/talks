@@ -8,15 +8,53 @@
 
 * Mainly used for SUSE OpenStack Cloud, Ceph, Cloud Foundry
 
-* Ruby on Rails Web UI and REST API with command line clients
+* Configured through Ruby on Rails Web UI and REST API with command line
+  clients
+
+<!--
+
+Crowbar is the installation and configuration management framework tool we use
+for a bunch of SUSE products things right now.
+
+Originally Crowbar was started by Dell as a tool to install and configure
+distributed applications such as OpenStack on a cluster of machines. SUSE took
+over in 2013 and we have been maintaining it ever since.
+
+It's mainly used for SUSE OpenStack Cloud but it can also be used to set up
+Ceph or Cloud Foundry.
+
+Crowbar is configured and operated through a Ruby on Rails web interface which
+also exports a REST API. On the other side we have a command line client to
+talk to this REST API - much like the OpenStack CLI clients.
+
+-->
 
 ## Features
 
 * PXE boot discovery and installation for bare metal nodes
 
+* Easily extensible through *bar clamps*, one per OpenStack component
+
 * Chef based configuration management for all supported services
 
-* Easily extensible through bar clamps
+* Pick and chose from the barclamps you actually need
+
+<!--
+
+Let's have a look at Crowbar's features.
+
+First of all, it can deal with mostly unprepared bare metal machines. All they
+need to do is attempt to PXE boot. Crowbar will then automatically discover
+them and display the machines that successfully booted in its Nodes view. You
+can then assign names to these nodes, install an operating system on them and
+apply barclamps to them.
+
+Speaking of which: barclamps are the bread and butter of crowbar. A barclamp
+is a plugin for configuring a service, such as OpenStack Nova. Note that a
+service in this case can be - and usually is - a distributed system of multiple
+different daemons running on multiple different machines.
+
+-->
 
 ## Barclamps: Crowbar's Configuration Modules
 

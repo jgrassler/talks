@@ -250,11 +250,19 @@ OpenStack cloud's controller.
 
 
 Now we are almost done. All that remains is the bare minimum of UI components
-required to integrate your barclamp into the Crowbar Rails application.
+and metadata for the Crowbar App required to integrate your barclamp into the
+Crowbar Rails application.
 
-The simplest step is the controller. As I mentioned, we rarely do anything in
-the controllers so you probably won't either. Just copy one of the stub
-controllers, such as NovaController.rb and modify it.
+First of all, we'll need the file barbican.yml which contains metadata that
+describes the Barbican Barclamp from the Rails application's point of view.
+Also, we create the stub executable `crowbar_barbican` in the `bin/` directory.
+In both cases you can use the corresponding files from other barclamps for
+inspiration.
+
+Now we'll create the MVC parts of the barclamp, starting with the controller.
+As I mentioned, we rarely do anything in the controllers so you probably won't
+either. Just copy one of the stub controllers, such as NovaController.rb and
+modify it.
 
 Next you'll need to create an UI model. That one is a bit more involved since
 we usually have a fair amount of logic in there, and so might you. Just have a

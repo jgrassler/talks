@@ -298,9 +298,9 @@ good idea of where to look for things.
 
 ## Example Barclamp: Barbican
 
-* Example for case study: (The Barbican barclamp)
+* Example for case study: the Barbican barclamp (recently created)
 
-* See commit `cc1fea37169a4769257e0894f4363eccd241187a` for details
+* See commit [cc1fea37169a4](https://github.com/crowbar/crowbar-openstack/commit/cc1fea37169a4769257e0894f4363eccd241187a) for details
 
 * Preparation: Fork https://github.com/crowbar/crowbar-openstack and create
   topic branch
@@ -352,7 +352,7 @@ to come along with two things:
 
 -->
 
-## Step 1: Creating a Chef Cookbok
+## Step 2: Creating a Chef Cookbok
 
 *Note: all paths on this slide are relative to `chef/cookbooks/barbican`*
 
@@ -405,9 +405,12 @@ OpenStack cloud's controller.
 
 ## Step 4: Register Barclamp in the Crowbar App
 
-*Note: all paths on this slide are relative to `crowbar_framework/`*
+*Note: all paths on this slide are relative to `crowbar_framework/` (unless
+stated otherwise)*
 
 Minimal changes:
+
+* Create `barbican.yml` and `bin/crowbar_barbican` (relative to repository root)
 
 * Create UI controller: `app/controllers/barbican_controller.rb`
 
@@ -420,11 +423,19 @@ Minimal changes:
 <!--
 
 Now we are almost done. All that remains is the bare minimum of UI components
-required to integrate your barclamp into the Crowbar Rails application.
+and metadata for the Crowbar App required to integrate your barclamp into the
+Crowbar Rails application.
 
-The simplest step is the controller. As I mentioned, we rarely do anything in
-the controllers so you probably won't either. Just copy one of the stub
-controllers, such as NovaController.rb and modify it.
+First of all, we'll need the file barbican.yml which contains metadata that
+describes the Barbican Barclamp from the Rails application's point of view.
+Also, we create the stub executable `crowbar_barbican` in the `bin/` directory.
+In both cases you can use the corresponding files from other barclamps for
+inspiration.
+
+Now we'll create the MVC parts of the barclamp, starting with the controller.
+As I mentioned, we rarely do anything in the controllers so you probably won't
+either. Just copy one of the stub controllers, such as NovaController.rb and
+modify it.
 
 Next you'll need to create an UI model. That one is a bit more involved since
 we usually have a fair amount of logic in there, and so might you. Just have a

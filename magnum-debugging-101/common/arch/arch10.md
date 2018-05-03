@@ -1,0 +1,3 @@
+## CloudConfig Snippets...
+
+![CloudConfig Snippets...](img/magnum_architecture_10.PNG)

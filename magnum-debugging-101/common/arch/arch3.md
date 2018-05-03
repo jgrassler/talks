@@ -1,0 +1,3 @@
+## Create Cluster...
+
+![Create Cluster...](img/magnum_architecture_3.PNG)

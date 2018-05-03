@@ -1,0 +1,23 @@
+root@d52-54-77-77-01-01:~ # magnum cluster-show k8s_cluster
++---------------------+--------------------------------------------------------------------------+
+| Property            | Value                                                                    |
++---------------------+--------------------------------------------------------------------------+
+| status              | CREATE_FAILED                                                            |
+| cluster_template_id | ee9d182c-6987-46f6-8e6a-c873e2b10f6c                                     |
+| uuid                | 05203920-0c2b-4741-871a-8f298431a769                                     |
+| stack_id            | -                                                                        |
+| status_reason       | Failed to get discovery url from 'https://discovery.etcd.io/new?size=1'. |
+| created_at          | 2017-05-17T15:04:01+00:00                                                |
+| name                | k8s_cluster                                                              |
+| updated_at          | -                                                                        |
+| discovery_url       | -                                                                        |
+| faults              | {}                                                                       |
+| api_address         | -                                                                        |
+| coe_version         | -                                                                        |
+| master_addresses    | []                                                                       |
+| create_timeout      | 60                                                                       |
+| node_addresses      | []                                                                       |
+| master_count        | 1                                                                        |
+| container_version   | -                                                                        |
+| node_count          | 1                                                                        |
++---------------------+--------------------------------------------------------------------------+

@@ -1,0 +1,22 @@
+ magnum cluster-show k8s_cluster
+ +---------------------+------------------------------------------------------------+
+ | Property            | Value                                                      |
+ +---------------------+------------------------------------------------------------+
+ | status              | CREATE_COMPLETE                                            |
+ | cluster_template_id | 0f1fb1bf-7e34-4c05-8a66-062392817c5f                       |
+ | uuid                | 3ffe8404-a801-4c3f-9a7b-16a297f5351a                       |
+ | stack_id            | a4fcbd98-b7d0-4f74-8d88-51bbd5d229d4                       |
+ | status_reason       | Stack CREATE completed successfully                        |
+ | created_at          | 2017-05-17T14:41:29+00:00                                  |
+ | name                | k8s_cluster                                                |
+ | updated_at          | 2017-05-17T15:05:30+00:00                                  |
+ | discovery_url       | https://discovery.etcd.io/8a5dc783ca8c17109a386d6d690d2f2f |
+ | api_address         | http://192.168.226.138:8080                                |
+ | coe_version         | v1.3.7                                                     |
+ | master_addresses    | ['192.168.226.138']                                        |
+ | create_timeout      | 60                                                         |
+ | node_addresses      | ['10.0.0.4']                                               |
+ | master_count        | 1                                                          |
+ | container_version   | 1.12.3                                                     |
+ | node_count          | 1                                                          |
+ +---------------------+------------------------------------------------------------+

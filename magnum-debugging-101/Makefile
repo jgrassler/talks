@@ -1,0 +1,111 @@
+.PHONY: all clean
+
+SVG := $(shell find img/ -name '*.svg')
+DIA := $(shell find img/ -name '*.dia')
+SVG_PNG := $(patsubst %.svg, %.png, $(SVG))
+DIA_PNG := $(patsubst %.dia, %.PNG, $(DIA))
+PNG :=  $(DIA_PNG) $(SVG_PNG)
+
+IMG_ARCH := \
+  img/magnum_architecture_0.PNG \
+	img/magnum_architecture_1.PNG \
+	img/magnum_architecture_2.PNG \
+	img/magnum_architecture_3.PNG \
+	img/magnum_architecture_4.PNG \
+	img/magnum_architecture_5.PNG \
+	img/magnum_architecture_6.PNG \
+	img/magnum_architecture_7.PNG \
+	img/magnum_architecture_8.PNG \
+	img/magnum_architecture_9.PNG \
+	img/magnum_architecture_10.PNG \
+	img/magnum_architecture_11.PNG \
+	img/magnum_architecture_12.PNG \
+	img/magnum_architecture_13.PNG \
+	img/magnum_architecture_14.PNG \
+	img/magnum_architecture_15.PNG \
+	img/magnum_architecture_16.PNG
+
+IMG_FULL := 
+
+FILES_LIGHTNING := \
+  magnum-debugging-101/lightning.md \
+	magnum-debugging-101/lightning-4-3.odp \
+	magnum-debugging-101/lightning-4-3.pdf \
+	magnum-debugging-101/lightning-transcript.md \
+	magnum-debugging-101/lightning-transcript.html
+#	magnum-debugging-101/lightning-16-9.pdf \
+#	magnum-debugging-101/lightning-16-9.odp \
+
+FILES_FULL := \
+  magnum-debugging-101/full.md \
+	magnum-debugging-101/full-4-3.odp \
+	magnum-debugging-101/full-4-3.pdf \
+	magnum-debugging-101/full-transcript.md \
+	magnum-debugging-101/full-transcript.html
+#	magnum-debugging-101/full-16-9.odp \
+#	magnum-debugging-101/full-16-9.pdf \
+
+all: magnum-debugging-101 $(FILES_LIGHTNING) $(FILES_FULL)
+
+magnum-debugging-101/lightning.md: lightning/*.md
+	echo 'changequote(,)' | cat - lightning/main.md | m4 > $@
+
+magnum-debugging-101:
+	mkdir -p magnum-debugging-101
+
+magnum-debugging-101/full.md: full/*.md cmd/*
+	echo 'changequote(,)' | cat - full/main.md | m4 > $@
+
+magnum-debugging-101/lightning-4-3.odp: magnum-debugging-101/lightning.md lightning/template-4-3.odp $(IMG_ARCH)
+	odpdown \
+	-p 1 \
+	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
+	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
+	magnum-debugging-101/lightning.md lightning/template-4-3.odp $@
+
+magnum-debugging-101/lightning-16-9.odp: magnum-debugging-101/lightning.md lightning/template-16-9.odp $(IMG_ARCH)
+	odpdown \
+	-p 1 \
+	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
+	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
+	magnum-debugging-101/lightning.md lightning/template-16-9.odp $@
+
+magnum-debugging-101/full-4-3.odp: magnum-debugging-101/full.md full/template-4-3.odp $(IMG_ARCH)
+	odpdown \
+	-p 1 \
+	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
+	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
+	magnum-debugging-101/full.md full/template-4-3.odp $@
+
+magnum-debugging-101/full-16-9.odp: magnum-debugging-101/full.md full/template-16-9.odp $(IMG_ARCH)
+	odpdown \
+	-p 1 \
+	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
+	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
+	magnum-debugging-101/full.md full/template-16-9.odp $@
+
+%.pdf: %.odp
+	libreoffice --convert-to pdf --outdir $(shell dirname $<) $<
+
+%.html: %.md
+	pandoc -s --toc -f markdown_github -t html5 -o $@ $<
+
+%-transcript.md: %.md
+	bin/htmlcomments $< > $@
+
+# ugly, but will do
+img/%.Png: img/%.svg
+	inkscape --export-png=$@ $<
+
+img/%.PNG: img/%.dia
+	dia -e $@ -t png $<
+
+magnum-debugging-101.tar.bz2: all
+	tar -cjf $@ magnum-debugging-101
+
+clean:
+	rm -f $(FILES_LIGHTNING) $(FILES_FULL)
+	rm -f img/*PNG
+	rm -f img/*Png
+	rm -rf magnum-debugging-101
+	rm -rf magnum-debugging-101.tar.bz2

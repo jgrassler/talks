@@ -17,17 +17,17 @@ the magnum-debugging-101/ directory.
 
 # FILES
 
-* `lightning-{4-3,16-9}.{pdf,odp,md}: short version in various
-  formats and aspect rations. Please do not edit any of these files! Edit their
-  Markdown sources instead - see below for details.
+* `lightning-4-3.{pdf,odp,md}: short version in various formats. Please do not
+  edit any of these files! Edit their Markdown sources instead - see below for
+  details.
 
 * `lightning-transcript.{html,md}` transcript for the short version in
   HTML and Markdown format. For reading we recommend the HTML version since
   that integrates any figures shown in the slide.
 
-* `full-{4-3,16-9}.{pdf,odp,md}: regular version in various
-  formats and aspect rations. Please do not edit any of these files! Edit their
-  Markdown sources instead - see below for details.
+* `full-4-3.{pdf,odp,md}: regular version in various formats. Please do not
+  edit any of these files! Edit their Markdown sources instead - see below for
+  details.
 
 * `full-transcript.{html,md}` transcript for the regular version in
   HTML and Markdown format. For reading we recommend the HTML version since

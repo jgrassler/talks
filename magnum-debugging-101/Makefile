@@ -32,9 +32,12 @@ FILES_LIGHTNING := \
 	magnum-debugging-101/lightning-4-3.odp \
 	magnum-debugging-101/lightning-4-3.pdf \
 	magnum-debugging-101/lightning-transcript.md \
-	magnum-debugging-101/lightning-transcript.html
+	magnum-debugging-101/lightning-transcript.html \
+# Disabled for now: the architecture diagram doesn't fit into 16:9 format
+#	magnum-debugging-101/full-16-9.odp \
+#	magnum-debugging-101/full-16-9.pdf
 #	magnum-debugging-101/lightning-16-9.pdf \
-#	magnum-debugging-101/lightning-16-9.odp \
+#	magnum-debugging-101/lightning-16-9.odp
 
 FILES_FULL := \
   magnum-debugging-101/full.md \
@@ -42,8 +45,9 @@ FILES_FULL := \
 	magnum-debugging-101/full-4-3.pdf \
 	magnum-debugging-101/full-transcript.md \
 	magnum-debugging-101/full-transcript.html
+# Disabled for now: the architecture diagram doesn't fit into 16:9 format
 #	magnum-debugging-101/full-16-9.odp \
-#	magnum-debugging-101/full-16-9.pdf \
+#	magnum-debugging-101/full-16-9.pdf
 
 all: magnum-debugging-101 $(FILES_LIGHTNING) $(FILES_FULL)
 
@@ -66,8 +70,8 @@ magnum-debugging-101/lightning-4-3.odp: magnum-debugging-101/lightning.md lightn
 magnum-debugging-101/lightning-16-9.odp: magnum-debugging-101/lightning.md lightning/template-16-9.odp $(IMG_ARCH)
 	odpdown \
 	-p 1 \
-	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
-	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
+	--content-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks1 \
+	--break-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks4 \
 	magnum-debugging-101/lightning.md lightning/template-16-9.odp $@
 
 magnum-debugging-101/full-4-3.odp: magnum-debugging-101/full.md full/template-4-3.odp $(IMG_ARCH)
@@ -80,8 +84,8 @@ magnum-debugging-101/full-4-3.odp: magnum-debugging-101/full.md full/template-4-
 magnum-debugging-101/full-16-9.odp: magnum-debugging-101/full.md full/template-16-9.odp $(IMG_ARCH)
 	odpdown \
 	-p 1 \
-	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
-	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
+	--content-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks1 \
+	--break-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks4 \
 	magnum-debugging-101/full.md full/template-16-9.odp $@
 
 %.pdf: %.odp

@@ -1,7 +1,5 @@
 # Overview
 
-## Preliminaries: Slides and Transcript
-
 include(common/slides.md)
 
 include(common/intro.md)

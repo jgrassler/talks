@@ -6,7 +6,7 @@ SVG_PNG := $(patsubst %.svg, %.png, $(SVG))
 DIA_PNG := $(patsubst %.dia, %.PNG, $(DIA))
 PNG :=  $(DIA_PNG) $(SVG_PNG)
 
-IMG_ARCH := \
+IMG := \
   img/magnum_architecture_0.PNG \
 	img/magnum_architecture_1.PNG \
 	img/magnum_architecture_2.PNG \
@@ -24,8 +24,6 @@ IMG_ARCH := \
 	img/magnum_architecture_14.PNG \
 	img/magnum_architecture_15.PNG \
 	img/magnum_architecture_16.PNG
-
-IMG_FULL := 
 
 FILES_LIGHTNING := \
   magnum-debugging-101/lightning.md \
@@ -60,28 +58,28 @@ magnum-debugging-101:
 magnum-debugging-101/full.md: full/*.md cmd/*
 	echo 'changequote(,)' | cat - full/main.md | m4 > $@
 
-magnum-debugging-101/lightning-4-3.odp: magnum-debugging-101/lightning.md lightning/template-4-3.odp $(IMG_ARCH)
+magnum-debugging-101/lightning-4-3.odp: magnum-debugging-101/lightning.md lightning/template-4-3.odp $(IMG)
 	odpdown \
 	-p 1 \
 	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
 	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
 	magnum-debugging-101/lightning.md lightning/template-4-3.odp $@
 
-magnum-debugging-101/lightning-16-9.odp: magnum-debugging-101/lightning.md lightning/template-16-9.odp $(IMG_ARCH)
+magnum-debugging-101/lightning-16-9.odp: magnum-debugging-101/lightning.md lightning/template-16-9.odp $(IMG)
 	odpdown \
 	-p 1 \
 	--content-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks1 \
 	--break-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks4 \
 	magnum-debugging-101/lightning.md lightning/template-16-9.odp $@
 
-magnum-debugging-101/full-4-3.odp: magnum-debugging-101/full.md full/template-4-3.odp $(IMG_ARCH)
+magnum-debugging-101/full-4-3.odp: magnum-debugging-101/full.md full/template-4-3.odp $(IMG)
 	odpdown \
 	-p 1 \
 	--content-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks1 \
 	--break-master SUSE_5f_4x3_5f_Template_5f_2016_25_20v1-ks4 \
 	magnum-debugging-101/full.md full/template-4-3.odp $@
 
-magnum-debugging-101/full-16-9.odp: magnum-debugging-101/full.md full/template-16-9.odp $(IMG_ARCH)
+magnum-debugging-101/full-16-9.odp: magnum-debugging-101/full.md full/template-16-9.odp $(IMG)
 	odpdown \
 	-p 1 \
 	--content-master SUSE_5f_16x9_5f_Template_5f_2016_25_20v1-ks1 \
@@ -94,7 +92,8 @@ magnum-debugging-101/full-16-9.odp: magnum-debugging-101/full.md full/template-1
 %.html: %.md
 	pandoc -s --toc -f markdown_github -t html5 -o $@ $<
 
-%-transcript.md: %.md
+%-transcript.md: %.md $(IMG)
+	rsync -a --delete img magnum-debugging-101
 	bin/htmlcomments $< > $@
 
 # ugly, but will do

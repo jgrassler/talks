@@ -1,6 +1,6 @@
 * Compiled slides (recommended)
 
-  * [https://btw23.de/johannes/talks/magnum.tar.bz2](https://btw23.de/johannes/talks/magnum-debugging-101.tar.bz2)
+  * [https://btw23.de/johannes/talks/magnum-debugging-101.tar.bz2](https://btw23.de/johannes/talks/magnum-debugging-101.tar.bz2)
 
   * Slides and transcript for both lightning and full length talk
 

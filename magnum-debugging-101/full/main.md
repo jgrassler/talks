@@ -51,7 +51,7 @@ include(common/arch/arch0.md)
 # Magnum Under The Hood
 
 Now that we've got a general idea of what Magnum is all about we'll zoom in a
-bit and take a look at how it accomplishes its job.
+bit and accompany a cluster through its whole life cycle.
 
 # User...
 
@@ -91,6 +91,30 @@ use and many other things.
 
 -->
 
+## Cluster Template: Missing `os-distro` Field
+
+```
+ERROR: Image doesn't contain os-distro field. (HTTP 404)
+```
+
+* Glance image needs to have `os-distro` field in its metadata
+
+* `os-distro` needs to match a Magnum driver's cluster distribution such as
+  `jeos` or `fedora-atomic`
+
+<!--
+
+## Cluster Template: Missing `os-distro` Field
+
+This particular error actually happens before we even create a cluster template
+since it is caused by the `os-distro` metadata attribute missing from the
+Glance image being used for the cluster. Magnum has a notion of drivers that
+are identified by orchestration engine, distribution name and version. The
+combination of the cluster template's orchestration engine and its images'
+`os-distro` field must match a Magnum driver.
+
+-->
+
 include(common/arch/arch3.md)
 
 <!--
@@ -118,6 +142,28 @@ template.
 
 -->
 
+## Early `CREATE_FAILED` from Magnum
+
+* Cluster status
+
+  * `magnum cluster-show <cluster name>`
+
+  * Status `CREATE_FAILED` indicates a creation failure
+
+  * Erorr message in `status_reason` upon `CREATE_FAILED`
+
+* Common early failures from Magnum itself:
+
+  * `Failed to get discovery url from 'https://discovery.etcd.io/new?size=1'`
+
+  * `This cluster can only be created with trust/cluster_user_trust = True in magnum.conf`
+
+<!--
+
+TODO: add transcript
+
+-->
+
 include(common/arch/arch5.md)
 
 <!--
@@ -134,6 +180,12 @@ magnum-conductor, which is tasked with the actual work of creating the cluster.
 -->
 
 include(common/arch/arch6.md)
+
+<!--
+
+TODO: insert rabbitmq/conductor crash errors here
+
+-->
 
 <!--
 
@@ -180,6 +232,30 @@ end of this process we'll have Nova instances with network connectivity up and
 running, and we're primarily interested of what happens inside these.
 
 ![Heat Creates VMs and Plumbing](img/magnum_architecture_8.PNG)
+
+-->
+
+## Early `CREATE_FAILED` from Heat
+
+* "early": after 30s to a few minutes
+
+* Cluster status
+
+  * `magnum cluster-show <cluster name>`
+
+  * Status `CREATE_FAILED` indicates a creation failure
+
+  * Erorr message in `status_reason` upon `CREATE_FAILED`
+
+* Common early failures from Heat:
+
+  * `No valid host was found (Nova)`
+
+  * Quota issues (Floating IPs, networks, volumes, ...)
+
+<!--
+
+TODO: add transcript
 
 -->
 
@@ -239,6 +315,30 @@ run the code in its user-data payload on startup.
 ![user-data run by cloud-init](img/magnum_architecture_12.PNG)
 
 -->
+
+## `CREATE_FAILED`: Wait Condition Timeout
+
+* Error message
+
+ * `Resource CREATE failed: WaitConditionTimeout`
+
+* Most common failure mode
+
+* Various causes
+
+## Wait Condition Timeout: `etcd` Discovery
+
+* Magnum cluster nodes use etcd to synchronize
+
+* Need to be able to reach etcd discovery URL
+
+* URL may be unreachable due to...
+
+  * ...firewall rules
+
+  * ...missing public network in cluster template
+
+  * ...misconfigured public network (e.g. missing router)
 
 include(common/arch/arch13.md)
 
@@ -300,6 +400,8 @@ pointing the native client to that configuration file.
 ![Kubernetes Credentials from Magnum API](img/magnum_architecture_16.PNG)
 
 -->
+
+## Kubernetes Failures
 
 ## Slides and Transcript
 

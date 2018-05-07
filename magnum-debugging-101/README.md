@@ -50,6 +50,8 @@ the magnum-debugging-101/ directory.
   converted to *.PNG by the Makefile (use a `.png` extension for PNG files that
   do not need conversion).
 
-* `cmd/` as they appear on slides.
+* `cmd/` contains commands as they appear on slides. Files with a `.sh`
+  extension can be run as-is, files without one cannot be run directly since
+  they contain placeholders.
 
 * `output/` sample output from various commands as it appears on slides.

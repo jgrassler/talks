@@ -357,12 +357,6 @@ include(common/arch/arch6.md)
 
 <!--
 
-TODO jgrassler: insert rabbitmq/conductor crash/unreachable errors here
-
--->
-
-<!--
-
 # Generate a Heat Template Matching Cluster
 
 Now magnum-conductor looks at both the Cluster's and the Cluster Template's
@@ -375,6 +369,116 @@ instances that Magnum will mix and match inside the Heat templates' user data
 payloads. I marked this step in red since we'll refer back to it later.
 
 ![Generate a Heat Template Matching Cluster](img/magnum_architecture_6.PNG)
+
+-->
+
+## Timeouts and frozen clients
+
+<!--
+
+## Timeouts and frozen clients
+
+Before we get to problems during cluster creation let's look at a Magnum API
+error that may be a bit puzzling if it occurs:
+
+-->
+
+## Timeouts and frozen clients
+
+* Sometimes Magnum clients hang
+
+<!--
+
+Sometimes Magnum clients hang
+
+-->
+
+## Timeouts and frozen clients
+
+* Sometimes Magnum clients hang
+
+* After a minute you may get
+
+```
+include(output/conductor-down) 
+```
+
+<!--
+
+If you wait about a minute you may get the following error message:
+
+```
+include(output/conductor-down) 
+```
+
+-->
+
+## Timeouts and frozen clients
+
+* Sometimes Magnum clients hang
+
+* After a minute you may get
+
+```
+include(output/conductor-down) 
+```
+
+* Diagnosis:
+
+<!--
+
+Diagnosis of the problem is fairly straightforward:
+
+-->
+
+## Timeouts and frozen clients
+
+* Sometimes Magnum clients hang
+
+* After a minute you may get
+
+```
+include(output/conductor-down) 
+```
+
+* Diagnosis:
+
+  * Timeout error message after a minute: magnum-conductor not
+    responding to RabbitMQ messages
+
+<!--
+
+* If you do get an error message after a bit, your problem is a lack of
+  RabbitMQ messages magnum-api expects in response to the messages it sent for
+  magnum-conductor. That usually means that there's no magnum-conductor
+  listening to the RabbitMQ message queue, usually because it has crashed. In
+  that case, restart magnum-conductor.
+
+-->
+
+## Timeouts and frozen clients
+
+* Sometimes Magnum clients hang
+
+* After a minute you may get
+
+```
+include(output/conductor-down) 
+```
+
+* Diagnosis:
+
+  * Timeout error message after a minute: magnum-conductor not
+    responding to RabbitMQ messages
+
+  * Indefinite freeze without error message: RabbitMQ not reachable for
+    magnum-api
+
+<!--
+
+If you see an indefinite hang that usually means that magnum-api cannot reach
+RabbitMQ. Once RabbitMQ is back up you will see the Magnum client fail with the
+same timeout error message.
 
 -->
 
@@ -1021,9 +1125,9 @@ point in an enterprise network. For there may be...
 
 ## Wait Condition Timeout: `etcd` Discovery
 
-* Magnum cluster nodes use etcd to synchronize
+* Magnum cluster nodes use `etcd` to synchronize
 
-* Need to be able to reach etcd discovery URL
+* Need to be able to reach `etcd` discovery URL
 
 * URL may be unreachable due to...
 
@@ -1033,16 +1137,50 @@ point in an enterprise network. For there may be...
 
   * ...DNS breakage or filters
 
-* Check whether this is the problem by `curl` on cluster's discovery URL from
-  inside the affected VM.
+* Error message in journal for `etcd`:
+
+```
+cluster status check: error connecting to https://discovery.etcd.io, retrying in 2s
+```
 
 <!--
 
-You can verify whether this is the problem by running `curl` on the cluster's
-`etcd` discovery URL (you'll find it in the cluster's `discovery_url`
-attribute).
+If you see an error message like this in the journal for etcd, you probably
+need to fix your network setup:
 
-TODO jgrassler: add error output as it appears in cloud-init log
+```
+cluster status check: error connecting to https://discovery.etcd.io, retrying in 2s
+```
+
+-->
+
+## Wait Condition Timeout: `etcd` Discovery
+
+* Magnum cluster nodes use `etcd` to synchronize
+
+* Need to be able to reach `etcd` discovery URL
+
+* URL may be unreachable due to...
+
+  * ...firewall rules
+
+  * ...misconfigured public network (e.g. missing routes)
+
+  * ...DNS breakage or filters
+
+* Error message in journal for `etcd`:
+
+```
+cluster status check: error connecting to https://discovery.etcd.io, retrying in 2s
+```
+
+* To verify: `curl` on cluster's discovery URL from inside the affected VM.
+
+<!--
+
+Alternatively, you can check whether you are facing this problem by running
+`curl` on the cluster's `etcd` discovery URL from the affected VM. You will
+find this URL in the cluster's `discovery_url` attribute)
 
 -->
 

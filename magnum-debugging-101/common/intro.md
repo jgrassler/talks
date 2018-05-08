@@ -80,12 +80,12 @@ Magnum can build Kubernetes, Docker Swarm or Ubunutu Mesos clusters.
 
 * Underlying Technologies
 
-  * Various Linux images supported (CoreOS, Fedora Atomic, OpenSUSE)
+  * Various Linux images supported (CoreOS, Fedora Atomic, Ubuntu)
 
 <!--
 
 It can work its magic with a variety of platforms, among them CoreOS, Fedora
-Atomic and OpenSUSE JeOS.
+Atomic and Ubuntu.
 
 -->
 
@@ -101,7 +101,7 @@ Atomic and OpenSUSE JeOS.
 
 * Underlying Technologies
 
-  * Various Linux images supported (CoreOS, Fedora Atomic, OpenSUSE)
+  * Various Linux images supported (CoreOS, Fedora Atomic, Ubuntu)
 
   * [Heat](https://wiki.openstack.org/wiki/Heat) and
     [cloud-init](https://cloudinit.readthedocs.io/) for providing the
@@ -128,7 +128,7 @@ with a Magnum generated Heat template.
 
 * Underlying Technologies
 
-  * Various Linux images supported (CoreOS, Fedora Atomic, OpenSUSE)
+  * Various Linux images supported (CoreOS, Fedora Atomic, Ubuntu)
 
   * [Heat](https://wiki.openstack.org/wiki/Heat) and
     [cloud-init](https://cloudinit.readthedocs.io/) for providing the

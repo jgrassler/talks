@@ -47,15 +47,20 @@ FILES_FULL := \
 #	magnum-debugging-101/full-16-9.odp \
 #	magnum-debugging-101/full-16-9.pdf
 
+FILES_COMMON := \
+  cmd/* \
+  output/* \
+	common/*
+
 all: magnum-debugging-101 $(FILES_LIGHTNING) $(FILES_FULL)
 
-magnum-debugging-101/lightning.md: lightning/*.md
+magnum-debugging-101/lightning.md: $(FILES_COMMON) lightning/*.md output/*
 	echo 'changequote(,)' | cat - lightning/main.md | m4 > $@
 
 magnum-debugging-101:
 	mkdir -p magnum-debugging-101
 
-magnum-debugging-101/full.md: full/*.md cmd/*
+magnum-debugging-101/full.md: $(FILES_COMMON)  full/*.md cmd/* output/*
 	echo 'changequote(,)' | cat - full/main.md | m4 > $@
 
 magnum-debugging-101/lightning-4-3.odp: magnum-debugging-101/lightning.md lightning/template-4-3.odp $(IMG)

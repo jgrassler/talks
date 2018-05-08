@@ -167,9 +167,7 @@ the cluster and may well fail at some stage.
 
 * Cluster status
 
-```
-include(cmd/cluster-show.sh)
-```
+  * `include(cmd/cluster-show.sh)`
 
 <!--
 
@@ -185,7 +183,7 @@ include(cmd/cluster-show.sh)
 
 * Cluster status
 
-  * include(cmd/cluster-show.sh)
+  * `include(cmd/cluster-show.sh)`
 
   * A `status` value of `CREATE_FAILED` indicates creation failure
     reported by `magnum-conductor`
@@ -204,9 +202,10 @@ creation has encountered a terminal error condition it cannot recover from.
 
 * Cluster status
 
-  * include(cmd/cluster-show.sh)
+  * `include(cmd/cluster-show.sh)`
 
-  * Status `CREATE_FAILED` indicates a creation failure
+  * A `status` value of `CREATE_FAILED` indicates creation failure
+    reported by `magnum-conductor`
 
   * Error message in `status_reason` upon `CREATE_FAILED`
 
@@ -221,9 +220,10 @@ the cluster's `status_reason` attribute.
 
 * Cluster status
 
-  * include(cmd/cluster-show.sh)
+  * `include(cmd/cluster-show.sh)`
 
-  * Status `CREATE_FAILED` indicates a creation failure
+  * A `status` value of `CREATE_FAILED` indicates creation failure
+    reported by `magnum-conductor`
 
   * Error message in `status_reason` upon `CREATE_FAILED`
 
@@ -239,9 +239,10 @@ At this stage, a couple of validation errors may occur.
 
 * Cluster status
 
-  * include(cmd/cluster-show.sh)
+  * `include(cmd/cluster-show.sh)`
 
-  * Status `CREATE_FAILED` indicates a creation failure
+  * A `status` value of `CREATE_FAILED` indicates creation failure
+    reported by `magnum-conductor`
 
   * Error message in `status_reason` upon `CREATE_FAILED`
 
@@ -269,9 +270,10 @@ service (if one has been specified).
 
 * Cluster status
 
-  * include(cmd/cluster-show.sh)
+  * `include(cmd/cluster-show.sh)`
 
-  * Status `CREATE_FAILED` indicates a creation failure
+  * A `status` value of `CREATE_FAILED` indicates creation failure
+    reported by `magnum-conductor`
 
   * Error message in `status_reason` upon `CREATE_FAILED`
 
@@ -392,13 +394,13 @@ minutes.
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
@@ -413,7 +415,7 @@ To see these errors passed through from Heat we will once again issue a
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
@@ -430,7 +432,7 @@ status we see in this field will be the Heat stack's state, by the way.
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
@@ -449,7 +451,7 @@ That error message is now drawn from the Heat stack's `stack_status_reason` attr
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
@@ -469,7 +471,7 @@ There are a myriad reasons a Heat stack may fail to deploy. The most common ones
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
@@ -493,7 +495,7 @@ There are a myriad reasons a Heat stack may fail to deploy. The most common ones
 
 ## Early `CREATE_FAILED` from Heat
 
-* "early": after 30s to a few minutes
+* "early": 30 seconds to a few minutes after `cluster create`
 
 * Cluster status
 
@@ -505,7 +507,7 @@ There are a myriad reasons a Heat stack may fail to deploy. The most common ones
 
 * Common early failures from Heat:
 
-  * Resource exhaustion `No valid host was found (Nova)`
+  * Resource exhaustion, e.g. `No valid host was found` (Nova)
 
   * Quota issues (Floating IPs, networks, volumes, ...)
 
@@ -922,6 +924,14 @@ point in an enterprise network. For there may be...
 
 * URL may be unreachable due to...
 
+## Wait Condition Timeout: `etcd` Discovery
+
+* Magnum cluster nodes use etcd to synchronize
+
+* Need to be able to reach etcd discovery URL
+
+* URL may be unreachable due to...
+
   * ...firewall rules
 
 <!--
@@ -961,7 +971,7 @@ point in an enterprise network. For there may be...
 
   * ...firewall rules
 
-  * ...misconfigured public network (e.g. missing router)
+  * ...misconfigured public network (e.g. missing routes)
 
   * ...DNS breakage or filters
 
@@ -983,7 +993,7 @@ point in an enterprise network. For there may be...
 
   * ...firewall rules
 
-  * ...misconfigured public network (e.g. missing router)
+  * ...misconfigured public network (e.g. missing routes)
 
   * ...DNS breakage or filters
 
@@ -1042,7 +1052,7 @@ such a cloud, cluster deployment may take longer than a wait condition's time ou
 
 ## Wait Condition Timeout: Timeout Too Low
 
-* Usually happens on large, busy clouds
+* Usually happens when deploying large clusters (100+ nodes) on busy clouds
 
 * Rare these days (generous default timeouts based on experience)
 
@@ -1057,7 +1067,7 @@ which should suffice for most clusters.
 
 ## Wait Condition Timeout: Timeout Too Low
 
-* Usually happens on large, busy clouds
+* Usually happens when deploying large clusters (100+ nodes) on busy clouds
 
 * Rare these days (generous default timeouts based on experience)
 
@@ -1071,7 +1081,7 @@ Diagnosing this is fairly easy:
 
 ## Wait Condition Timeout: Timeout Too Low
 
-* Usually happens on large, busy clouds
+* Usually happens when deploying large clusters (100+ nodes) on busy clouds
 
 * Rare these days (generous default timeouts based on experience)
 
@@ -1089,7 +1099,7 @@ node did indeed suceed, to rule out any other issues.
 
 ## Wait Condition Timeout: Timeout Too Low
 
-* Usually happens on large, busy clouds
+* Usually happens when deploying large clusters (100+ nodes) on busy clouds
 
 * Rare these days (generous default timeouts based on experience)
 

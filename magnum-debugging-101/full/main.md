@@ -1125,9 +1125,9 @@ point in an enterprise network. For there may be...
 
 ## Wait Condition Timeout: `etcd` Discovery
 
-* Magnum cluster nodes use etcd to synchronize
+* Magnum cluster nodes use `etcd` to synchronize
 
-* Need to be able to reach etcd discovery URL
+* Need to be able to reach `etcd` discovery URL
 
 * URL may be unreachable due to...
 
@@ -1137,16 +1137,50 @@ point in an enterprise network. For there may be...
 
   * ...DNS breakage or filters
 
-* Check whether this is the problem by `curl` on cluster's discovery URL from
-  inside the affected VM.
+* Error message in journal for `etcd`:
+
+```
+cluster status check: error connecting to https://discovery.etcd.io, retrying in 2s
+```
 
 <!--
 
-You can verify whether this is the problem by running `curl` on the cluster's
-`etcd` discovery URL (you'll find it in the cluster's `discovery_url`
-attribute).
+If you see an error message like this in the journal for etcd, you probably
+need to fix your network setup:
 
-TODO jgrassler: add error output as it appears in cloud-init log
+```
+cluster status check: error connecting to https://discovery.etcd.io, retrying in 2s
+```
+
+-->
+
+## Wait Condition Timeout: `etcd` Discovery
+
+* Magnum cluster nodes use `etcd` to synchronize
+
+* Need to be able to reach `etcd` discovery URL
+
+* URL may be unreachable due to...
+
+  * ...firewall rules
+
+  * ...misconfigured public network (e.g. missing routes)
+
+  * ...DNS breakage or filters
+
+* Error message in journal for `etcd`:
+
+```
+cluster status check: error connecting to https://discovery.etcd.io, retrying in 2s
+```
+
+* To verify: `curl` on cluster's discovery URL from inside the affected VM.
+
+<!--
+
+Alternatively, you can check whether you are facing this problem by running
+`curl` on the cluster's `etcd` discovery URL from the affected VM. You will
+find this URL in the cluster's `discovery_url` attribute)
 
 -->
 

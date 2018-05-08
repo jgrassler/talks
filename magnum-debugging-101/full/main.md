@@ -93,6 +93,46 @@ use and many other things.
 
 ## Cluster Template: Missing `os-distro` Field
 
+<!--
+
+## Cluster Template: Missing `os-distro` Field
+
+At this point we can already encounter a problem. It's trivial to solve but the
+error message leaves something to be desired, so we will cover it here:
+
+-->
+
+## Cluster Template: Missing `os-distro` Field
+
+```
+ERROR: Image doesn't contain os-distro field. (HTTP 404)
+```
+
+<!--
+
+```
+ERROR: Image doesn't contain os-distro field. (HTTP 404)
+```
+
+-->
+
+## Cluster Template: Missing `os-distro` Field
+
+```
+ERROR: Image doesn't contain os-distro field. (HTTP 404)
+```
+
+* Glance image needs to have `os-distro` field in its metadata
+
+<!--
+
+This happens if the Glance image does not have an `os-distro` field in its
+metadata.
+
+-->
+
+## Cluster Template: Missing `os-distro` Field
+
 ```
 ERROR: Image doesn't contain os-distro field. (HTTP 404)
 ```
@@ -104,14 +144,11 @@ ERROR: Image doesn't contain os-distro field. (HTTP 404)
 
 <!--
 
-## Cluster Template: Missing `os-distro` Field
 
-This particular error actually happens before we even create a cluster template
-since it is caused by the `os-distro` metadata attribute missing from the
-Glance image being used for the cluster. Magnum has a notion of drivers that
-are identified by orchestration engine, distribution name and version. The
-combination of the cluster template's orchestration engine and its images'
-`os-distro` field must match a Magnum driver.
+Magnum has a notion of drivers that are identified by orchestration engine,
+distribution name and version. The combination of the cluster template's
+orchestration engine and its image's `os-distro` field must match a Magnum
+driver.
 
 -->
 
@@ -320,7 +357,7 @@ include(common/arch/arch6.md)
 
 <!--
 
-TODO: insert rabbitmq/conductor crash errors here
+TODO jgrassler: insert rabbitmq/conductor crash/unreachable errors here
 
 -->
 
@@ -863,9 +900,8 @@ $ include(cmd/find-wait-condition.sh)include(output/failed-master-wait-condition
 /var/log/cloud-init-output.log
 ```
 
-This log contains all output from cloud-init. We will use it throughout the
-next couple of slides to show you what some of the most common problems look
-like.
+This log contains all output from cloud-init. We will cover it in more detail
+in a bit.
 
 -->
 
@@ -1006,26 +1042,157 @@ You can verify whether this is the problem by running `curl` on the cluster's
 `etcd` discovery URL (you'll find it in the cluster's `discovery_url`
 attribute).
 
-TODO: add error output as it appears in cloud-init log
+TODO jgrassler: add error output as it appears in cloud-init log
 
 -->
 
 ## Wait Condition Timeout: User Data Script Fails
 
-* Each node is set up by `cloud-init` user data scripts
+<!--
 
-* Scripts may fail on one or more nodes and for various reasons
+## Wait Condition Timeout: User Data Script Fails
 
-* `/var/log/cloud-init-output.log` on the affected node should give you an idea
-  of what went wrong.
+If the problem is not etcd, some other part of the user data scripts may have
+gone haywire. We will not go into detail here, for these may fail at any point
+and time is rather limited.  The debugging process is always the same, though:
 
-* You may have to modify Magnum's user data fragments to add additional
-  debugging output.
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
 
 <!--
 
-If the problem is not etcd, some other part of the user data scripts may have
-gone haywire.
+### Background
+
+First of all a little refresher on how a Magnum cluster's nodes are being
+deployed.
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+<!--
+
+Each node runs multiple `cloud-init` user data script. There's usually around
+six to eight of these. The exact number and type of scripts varies depending on
+the platform, container orchestration engine and various attributes such as the
+volume driver.
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+  * Any of these scripts may fail on one or more nodes
+
+<!--
+
+Any of these scripts may fail for all sorts of reasons.
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+  * Any of these scripts may fail on one or more nodes
+
+* Debugging 
+
+<!--
+
+Debugging is rather straightforward:
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+  * Any of these scripts may fail on one or more nodes
+
+* Debugging 
+
+  * `/var/log/cloud-init-output.log` on the affected node should give you a
+    first idea of what went wrong.
+
+<!--
+
+First of all, log into the VM for which the wait condition timed out (you can
+figure out which VM to look at using the debugging tools we already mentioned)
+and look at `/var/log/cloud-init-output.log`. If you are lucky this will
+already contain useful information that shows you exactly what the problem is.
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+  * Any of these scripts may fail on one or more nodes
+
+* Debugging
+
+  * `/var/log/cloud-init-output.log` on the affected node should give you a first
+    idea of what went wrong.
+
+  * You may have to modify Magnum's user data fragments (`fragments/` directories
+    under `magnum/drivers/`) to add additional debugging output (or directly in
+    `/var/lib/cloud/instance/scripts` on the VM).
+
+<!--
+
+Sometimes you will not be lucky though and you will only see a non-zero exit
+status somewhere that does not tell you much by itself. In that case you can
+edit the cloud-init fragments. You can either do that on the VM in question
+(you will find them in `/var/lib/cloud/instance/scripts`) and re-run them or
+you can modify them in the Magnum source tree on your controller node if you've
+got that level of access. Where exactly the Magnum source tree resides depends
+on your controller's operating system.
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+  * Any of these scripts may fail on one or more nodes
+
+* Debugging
+
+  * `/var/log/cloud-init-output.log` on the affected node should give you a first
+    idea of what went wrong.
+
+  * You may have to modify Magnum's user data fragments (`fragments/` directories
+    under `magnum/drivers/`) to add additional debugging output (or directly in
+    `/var/lib/cloud/instance/scripts` on the VM).
+
+  * Modifying fragments in the Magnum source tree requires recreating the
+    cluster
+
+<!--
+
+Editing the fragments in the Magnum source tree is a bit tedious since it
+requires recreating the cluster with the modified fragments in place.
+Nonetheless this is sometimes required since the node may no longer be in the
+state it needs to be in if you re-run one of the `cloud-init` fragments.
 
 -->
 
@@ -1180,6 +1347,8 @@ pointing the native client to that configuration file.
 -->
 
 ## Kubernetes Failures
+
+<!-- TODO slunkad: fill in some Kubernetes errors (maybe some problems caused by cluster_user_trust=False in situations where the trust token is needed -->
 
 ## Slides and Transcript
 

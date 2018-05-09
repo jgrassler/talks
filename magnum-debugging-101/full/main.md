@@ -1423,6 +1423,11 @@ that.
 
 -->
 
+## TLS Failures
+
+* Check if openstack_ca_file option is set to the OpenStack CA
+
+
 include(common/arch/arch13.md)
 
 <!--
@@ -1485,6 +1490,58 @@ pointing the native client to that configuration file.
 -->
 
 ## Kubernetes Failures
+
+* kubectl version
+
+* kubectl get nodes
+
+* Troubleshooting:
+  * Usually this is a configuration issue and you need to check the master and
+    minion config files in /etc/kubernetes/
+
+<!--
+
+A few things can go wrong like the apiserver is down which you will see with
+the `kubectl version` command or the minion nodes are not reachable which will
+result in  `kubectl get nodes` returning nothing which again mostly is a config
+related issue.
+
+-->
+
+## Kubernetes Networking Failures
+
+* Pods not able to reach each other
+
+* Troubleshooting:
+  * Check if neutron is working properly by pinging between the minion nodes.
+  * Check if the docker0 and flannel0 interfaces are configured correctly.
+  * Check if node IP's are in the correct flannel subnet, if not docker deamon
+    is not configured correct with parameter --bip.
+  * Check if flannel is running properly.
+  * Check kube_proxy to check if the problem caused  is only on a kubernetes
+    level.
+
+
+<!--
+Note: This is specific to the default network driver flannel.
+There are different levels at which the network could be broken leading to
+connectivity issues. Firstly, make sure that neutron is working properly and
+that all the nodes in the cluster are able to ping each other. The networking
+between pods is different and separate from the neutron network set up for the
+cluster. Kubernetes presents a flat network space for the pods and services and
+uses different network drivers to provide this network model. Start by checking
+the interfaces and the docker deamon. Then check flannel which is the default
+network driver for magnum which provides a flat network space for the
+containers in a cluster. Therefore, if Flannel fails, some containers will not
+be able to access services from other containers in the cluster. Lastly, the
+containers created by Kubernetes for pods will be on the same IP subnet as the
+containers created directly in Docker and so they will have the same connectivity.
+However, the pods still may not be able to reach each other because normally they
+connect through some Kubernetes services rather than directly. The services are
+supported by the kube-proxy and rules inserted into the iptables, therefore their
+networking paths have some extra hops and there may be problems here.
+-->
+
 
 <!-- TODO slunkad: fill in some Kubernetes errors (maybe some problems caused by cluster_user_trust=False in situations where the trust token is needed -->
 

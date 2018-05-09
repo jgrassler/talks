@@ -19,7 +19,7 @@ include(common/arch/arch1.md)
 
 # User and Magnum API
 
-That client talks to the Magnum API.
+That client talks to the Magnum API...
 
 ![User and Magnum API](img/magnum_architecture_1.PNG)
 
@@ -32,8 +32,7 @@ include(common/arch/arch2.md)
 
 # Describe Cluster in ClusterTemplate
 
-The first thing we create with this client is a cluster template. That holds
-most of the metadata describing a Magnum cluster.
+...and creates a cluster template.
 
 ![Describe Cluster in ClusterTemplate](img/magnum_architecture_2.PNG)
 
@@ -56,8 +55,7 @@ ERROR: Image doesn't contain os-distro field. (HTTP 404)
 
 ## Cluster Template: Missing `os-distro` Field
 
-At this point we can already encounter a problem. It's trivial to solve but the
-error message leaves something to be desired, so we will cover it here:
+...or not if it goes wrong with this error message:
 
 ```
 ERROR: Image doesn't contain os-distro field. (HTTP 404)
@@ -86,48 +84,9 @@ include(common/arch/arch4.md)
 # ...based on ClusterTemplate
 
 Now that we have a Cluster Template we can create the cluster itself, which
-references it.  For that we'll need to reference the cluster template by name
-or UUID.
+references it.
 
 ![...based on ClusterTemplate](img/magnum_architecture_4.PNG)
-
--->
-
-## Early `CREATE_FAILED` from Magnum
-
-* Cluster status
-
-  * `include(cmd/cluster-show.sh)`
-
-  * A `status` value of `CREATE_FAILED` indicates creation failure
-
-  * Error message in `status_reason` upon `CREATE_FAILED`
-
-* Common early failures from Magnum itself:
-
-  * `Failed to get discovery url from 'https://discovery.etcd.io/new?size=1'`
-
-  * `This cluster can only be created with trust/cluster_user_trust = True in magnum.conf`
-
-<!--
-
-At this point we may encounter a different failure. Magnum won't tell us right
-away because it is creating the cluster in the background. To see its status we
-need to poll the Magnum API...
-
-```
-include(cmd/cluster-show.sh)
-```
-
-and examine the `status` and `stack_status` fields. `status` will tell us if
-creation failed, `status_reason` will tell us why it failed if it did.
-
-If we get a `CREATE_FAILED` after only a couple of seconds it's usually
-a failure to `magnum-api` obtain a `etcd` discovery URL. On a Newton cloud you
-may see this error message about `cluster_user_trust`, but as of Ocata this
-check has been remover. Instead, things that communicate with Openstack APIs
-from inside the cluster will fail with authentication errors. You will find
-more information on this in the 40 minute version.
 
 -->
 
@@ -137,9 +96,8 @@ include(common/arch/arch5.md)
 
 # API to Conductor: "Create Cluster, please"
 
-Now that the Magnum API has gotten a request to create a cluster, it passes a
-RabbitMQ message to its backend service, `magnum-conductor`, which does the
-actual work.
+When Magnum API gets this request to create a cluster, it passes a RabbitMQ
+message to its backend service, `magnum-conductor`, which does the actual work.
 
 ![API to Conductor: "Create Cluster, please"](img/magnum_architecture_5.PNG)
 
@@ -165,10 +123,55 @@ include(output/conductor-down)
 
 <!--
 
-Now that may go wrong. Depending on whether RabbitMQ or just magnum-conductor
-is down you will either experience an indefinite Magnum client hang or see this
-error message. Check whether `magnum-conductor` and RabbitMQ are up and running
-in that case.
+That communication may break down, though. Depending on whether RabbitMQ or
+just `magnum-conductor` is unavailable, `magnum-client` will either hang or
+output this error message after a minute. If this happens, make sure both
+services are up and running and retry.
+
+-->
+
+include(common/arch/arch5.md)
+
+<!--
+
+So, back to magnum-conductor. Let's assume it gets the message now.
+
+-->
+
+## Early `CREATE_FAILED` from `magnum-conductor`
+
+* Cluster status
+
+  * `include(cmd/cluster-show.sh)`
+
+  * A `status` value of `CREATE_FAILED` indicates creation failure
+
+  * Error message in `status_reason` upon `CREATE_FAILED`
+
+* Common early failures from Magnum itself:
+
+  * `Failed to get discovery url from 'https://discovery.etcd.io/new?size=1'`
+
+  * `This cluster can only be created with trust/cluster_user_trust = True in magnum.conf`
+
+<!--
+
+From this point onward we need to poll the Magnum API...
+
+```
+include(cmd/cluster-show.sh)
+```
+
+...and examine the `status` and `status_reason` fields to see the state of our
+cluster. `status` will tell us if cluster creation failed, suceeded or is still
+in progress. `status_reason` will tell us why it failed if it did.
+
+If we do get a `CREATE_FAILED` status after only a couple of seconds it's usually
+due to `magnum-conductor` failing to obtain an `etcd` discovery URL. That one
+is pretty common in enterprise environments where the machine magnum-conductor
+runs on may not be able to access the Internet. In that case you will need to
+set up a local `etcd` discovery service and specify it in your clusters'
+cluster templates.
 
 -->
 
@@ -176,10 +179,10 @@ include(common/arch/arch6.md)
 
 <!--
 
-# Generate a Heat Template Matching Cluster
+## Generate a Heat Template Matching Cluster
 
-Now `magnum-conductor` generates a Heat template from the information in the
-cluster and cluster template...
+If none of the early errors happened, `magnum-conductor` generates a Heat
+template...
 
 ![Generate a Heat Template Matching Cluster](img/magnum_architecture_6.PNG)
 
@@ -205,9 +208,8 @@ include(common/arch/arch8.md)
 
 # Heat Creates VMs and Plumbing
 
-...which goes and spawns Nova instances, interconnects them with Neutron
-networks, assigns Floating IPs and adds all the other ingredients that go into
-a working Heat stack.
+Heat will then spawn Nova instances, interconnect them with Neutron networks,
+and add all the other ingredients required for our cluster...
 
 ![Heat Creates VMs and Plumbing](img/magnum_architecture_8.PNG)
 
@@ -236,13 +238,9 @@ a working Heat stack.
 
 ## Early `CREATE_FAILED` from Heat
 
-If cluster creation fails after 30 seconds to a few minutes
-we will see creation failures passed through from Heat. Again we check the
-cluster's `status` and `status_reason` which contains the passed through
-`stack_status_reason` from Heat. Failures at this point are usually either
-resource exhaustion problems such as the ever popular `No valid host was found`
-from Nova or the equally popular "our cloud admin forgot bumping the default
-quota of 10 volumes to something more sensible".
+...presuming it can. For it may encounter resource exhaustion problems such as
+the ever popular `No valid host was found` or the equally popular "Oops, our
+admin forgot increasing the default quota!".
 
 -->
 
@@ -252,8 +250,7 @@ include(common/arch/arch9.md)
 
 # VMs Run Container Friendly OS Image
 
-If we make it past this hurdle we will now have a bunch of VMs with a container
-friedly image...
+If we make it past this hurdle we will now have a bunch of VMs...
 
 ![VMs Run Container Friendly OS Image](img/magnum_architecture_9.PNG)
 
@@ -265,8 +262,8 @@ include(common/arch/arch12.md)
 
 # user-data run by cloud-init
 
-...on which `cloud-init` runs the CloudConfig snippets generated by Magnum.
-If that fails to complete we will see the most common Magnum failure mode:
+...on which `cloud-init` runs the CloudConfig scripts generated by Magnum. If
+these fails to complete we will see the most common Magnum failure mode:
 
 ![user-data run by cloud-init](img/magnum_architecture_12.PNG)
 

@@ -12,6 +12,10 @@
 
   * [https://github.com/jgrassler/talks/tree/master/magnum-debugging-101](https://github.com/jgrassler/talks/tree/master/magnum-debugging-101)
 
+* Upstream troubleshooting guide
+
+  * https://docs.openstack.org/magnum/latest/admin/troubleshooting-guide.html
+
 <!--
 
 ## Preliminaries: Slides and Transcript
@@ -26,5 +30,9 @@ presentation can retrieve them from our
 
 You do not need to remember these URLs now. We will display a shortened URL and
 QR code at the end.
+
+Last but not least, there is an upstream troubleshooting guide as well. It
+covers a range of things we haven't been able to fit in here. We especially
+recommend the very exhaustive sections on Kubernetes and Flannel.
 
 -->

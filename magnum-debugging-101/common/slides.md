@@ -1,4 +1,4 @@
-## Preliminaries: Slides and Transcript
+## Preliminaries: Further Reading
 
 * Compiled slides (recommended)
 
@@ -20,19 +20,14 @@
 
 ## Preliminaries: Slides and Transcript
 
-You will find the slides for both the full length and lightning talk version of
-this talk along with a transcript
+You will find the slides and sources for both the full length and lightning
+talk version of this talk along with a transcript
 [here](https://btw23.de/johannes/talks/magnum-debugging-101.tar.bz2).
-
-Those interested in the odpdown sources and Makefile we used to build this
-presentation can retrieve them from our
-[Git repository](https://github.com/jgrassler/talks/tree/master/magnum-debugging-101).
 
 You do not need to remember these URLs now. We will display a shortened URL and
 QR code at the end.
 
-Last but not least, there is an upstream troubleshooting guide as well. It
-covers a range of things we haven't been able to fit in here. We especially
-recommend the very exhaustive sections on Kubernetes and Flannel.
+Last but not least, there is an upstream troubleshooting guide as well.
+Especially on the subject of Kubernetes debugging it is highly recommended.
 
 -->

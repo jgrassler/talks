@@ -4,42 +4,6 @@ include(common/slides.md)
 
 include(common/intro.md)
 
-<!--
-
-## How does it work?
-
-Let's take a closer look at how exactly Magnum builds its clusters and gives
-you access to them. We'll start with a user's perspective.
-
-### User's point of view
-
-First of all, the user describes the container infrastructure they want in terms
-of a cluster template. A cluster template is a data structure defining one or
-more cluster's properties, which is to say it can be shared by multiple
-cluster's. A cluster template defines which container orchestration engine
-(such as Kubernetes) to use for the cluster, or which Glance image to run on
-its instances.
-
-Once there is a cluster template, the user requests creation of one or more
-Magnum clusters based on this template's properties. Magnum will then do its
-magic in the background and eventually it will hopefully report success. Now
-the user can request access credentials for the container orchestration engine
-from the Magnum API and use the orchestration engine's API to deploy their
-workload.
-
-### Magnum's point of view
-
-When Magnum receives a request for cluster template creation it simply stores
-it in the database. The interesting bit happens when it receives a request to
-create a cluster based on that cluster template: now it uses the information
-from the cluster template to stitch together a tailor-made Heat template for
-deploying a cluster with these properties. It then passes that template to Heat
-for building the cluster. While Heat is working on it, Magnum will continuously
-poll the Heat API for the resulting Heat stack's state. Once it transitions to
-CREATE_COMPLETE, the Magnum cluster will transition to CREATE_COMPLETE as well.
-
--->
-
 # Magnum Under The Hood
 
 ## User...

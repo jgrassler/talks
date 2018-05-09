@@ -1,9 +1,3 @@
-# Overview
-
-include(common/slides.md)
-
-include(lightning/intro.md)
-
 ## User...
 
 include(common/arch/arch0.md)
@@ -12,8 +6,8 @@ include(common/arch/arch0.md)
 
 # User...
 
-Like many stories in our profession, the Magnum debugging one starts with a
-user. That user operates a Magnum client.
+Like many stories in our profession, this one one starts with a user. That user
+operates a Magnum client.
 
 ![User...](img/magnum_architecture_0.PNG)
 
@@ -39,9 +33,7 @@ include(common/arch/arch2.md)
 # Describe Cluster in ClusterTemplate
 
 The first thing we create with this client is a cluster template. That holds
-most of the metadata for a Magnum cluster. Later, the only thing we need to
-specify when creating a cluster is the cluster template to use and the number
-of cluster nodes.
+most of the metadata describing a Magnum cluster.
 
 ![Describe Cluster in ClusterTemplate](img/magnum_architecture_2.PNG)
 
@@ -73,7 +65,7 @@ ERROR: Image doesn't contain os-distro field. (HTTP 404)
 
 This happens if the Glance image does not have an `os-distro` field in its
 metadata. Magnum uses this field to determine which image specific driver to
-use, so set it to fix this problem.
+use, so set it and the error will go away.
 
 -->
 
@@ -83,8 +75,6 @@ include(common/arch/arch3.md)
 
 # Create Cluster...
 
-Now that we have a Cluster Template we can create the cluster itself.
-
 ![Create Cluster...](img/magnum_architecture_3.PNG)
 
 -->
@@ -93,7 +83,11 @@ include(common/arch/arch4.md)
 
 <!--
 
-For that we'll need to reference the cluster template by name or UUID.
+# ...based on ClusterTemplate
+
+Now that we have a Cluster Template we can create the cluster itself, which
+references it.  For that we'll need to reference the cluster template by name
+or UUID.
 
 ![...based on ClusterTemplate](img/magnum_architecture_4.PNG)
 
@@ -296,16 +290,15 @@ If that fails to complete we will see the most common Magnum failure mode:
 
 <!--
 
-Now this user data script is where the most common error occurs: the wait
-condition timeout.
+Now this user data script is where the most common failure mode occurs: the
+wait condition timeout.
 
 Just like other errors, you will see this one in the `status_reason` field.
 
-Wait condition timeouts are the most common failure mode for Magnum clusters.
-They happen whenever the user data scripts fail: for the very last script to
-run signals deployment completion by requesting the wait condition's URL. If
-that URL is never accessed, the wait condition times out and transitions to
-`CREATE_FAILED` state.
+Wait condition timeouts happen if the user data scripts on an instance fail to
+signal completion: for the very last script to run accesses the wait
+condition's URL. If that URL is accessed late or never, the wait condition
+times out and transitions to `CREATE_FAILED` state.
 
 -->
 
@@ -320,7 +313,7 @@ $ include(cmd/cluster-stack-id.sh)include(output/cluster-stack-id)
 * Find timed out wait condition
 
 ```
-$ include(cmd/find-wait-condition-short.sh)include(output/failed-master-wait-condition)
+$ include(cmd/find-wait-condition-short.sh)include(output/failed-master-wait-condition-short)
 ```
 
 <!--
@@ -475,16 +468,3 @@ And now the user comes along and starts talking to the Kubernetes API...
 ## Kubernetes Failures
 
 <!-- TODO slunkad: fill in some Kubernetes errors (maybe some problems caused by cluster_user_trust=False in situations where the trust token is needed -->
-
-## Slides and Transcript
-
-include(common/slides.md)
-
-<!--
-
-This concludes the introduction part. We are putting up the URL to the slides
-again, because the slides and the supporting material (especially the little
-code snippets you can paste from in a pinch) will come in handy for the hand-on
-part. Does everybody have the slides? If you do not, please download them now.
-
--->

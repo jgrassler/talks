@@ -32,7 +32,9 @@ include(common/arch/arch2.md)
 
 # Describe Cluster in ClusterTemplate
 
-...and creates a cluster template.
+...and creates a cluster template. A cluster template is a data structure
+holding most of a magnum cluster's metadata, such as the container
+orchestration engine and the glance image to use.
 
 ![Describe Cluster in ClusterTemplate](img/magnum_architecture_2.PNG)
 
@@ -48,22 +50,21 @@ ERROR: Image doesn't contain os-distro field. (HTTP 404)
 
 * Glance image needs to have `os-distro` field in its metadata
 
-* `os-distro` needs to match a Magnum driver's cluster distribution such as
-  `jeos` or `fedora-atomic`
+* Magnum uses `os-distro` to pick the image/container orchestration engine
+  specific driver to deploy the cluster
 
 <!--
 
 ## Cluster Template: Missing `os-distro` Field
 
-...or not if it goes wrong with this error message:
+This operation can fail due to the Glance image lacking an `os-distro` field:
 
 ```
 ERROR: Image doesn't contain os-distro field. (HTTP 404)
 ```
 
-This happens if the Glance image does not have an `os-distro` field in its
-metadata. Magnum uses this field to determine which image specific driver to
-use, so set it and the error will go away.
+Magnum uses this field to pick the image specific driver to use for cluster
+setup, so set it and the error will go away.
 
 -->
 
@@ -151,8 +152,6 @@ So, back to magnum-conductor. Let's assume it gets the message now.
 * Common early failures from Magnum itself:
 
   * `Failed to get discovery url from 'https://discovery.etcd.io/new?size=1'`
-
-  * `This cluster can only be created with trust/cluster_user_trust = True in magnum.conf`
 
 <!--
 
@@ -293,9 +292,8 @@ wait condition timeout.
 Just like other errors, you will see this one in the `status_reason` field.
 
 Wait condition timeouts happen if the user data scripts on an instance fail to
-signal completion: for the very last script to run accesses the wait
-condition's URL. If that URL is accessed late or never, the wait condition
-times out and transitions to `CREATE_FAILED` state.
+signal completion to the Heat API: the very last script to run does that. If
+any of the scripts before it fails, the wait condition will time out.
 
 -->
 
@@ -317,24 +315,22 @@ $ include(cmd/find-wait-condition-short.sh)include(output/failed-master-wait-con
 
 ## Debugging Wait Condition Timeouts
 
-If you do encounter this problem you always use the same basic debugging
-process:
+Debugging this always follows the same pattern:
 
-First of all you need to find the cluster's main Heat stack ID:
+First of all you need to find the cluster's Heat stack ID:
 
 ```
 $ include(cmd/cluster-stack-id.sh)include(output/cluster-stack-id)
 ```
 
-Second, you list the stack's resources and find the offending wait condition
-the offending `WaitCondition`:
+Second, you list the stack's resources and find the offending wait condition:
 
 ```
 $ include(cmd/find-wait-condition.sh)include(output/failed-master-wait-condition)
 ```
 
-We are only interested in the first and last column here, hence the `awk`. The
-first column tells us whether the problematic node is a master or minion node.
+We are only interested in the first column here, hence the `awk`. The first
+column tells us whether the problematic node is a master or minion node.
 
 -->
 
@@ -360,16 +356,23 @@ first column tells us whether the problematic node is a master or minion node.
 
 <!--
 
-If you know whether the problematic node is a master or minion you ssh to all
-nodes of that type and examine `/var/log/cloud-init-output.log` for errors.
-Once you've got a log with errors you've found the broken node. You could find
-the exact node by digging through Heat, but takes too long to explain here.
+Now you ssh to all master or minion nodes (depending on what's in the first
+column) nodes of that type and examine `/var/log/cloud-init-output.log` for
+errors. Once you've got a log with errors you've found the broken node. You
+could find the exact node by digging through Heat, but that takes too long to
+explain here.
 
-Now you might get lucky and see the problem in the log. If there's no useful
-information in there other than "this script failed", add debug output to the
-script in question and re-run it. Finally, if the problem requires a pristine
-VM to reproduce, you'll have to add your debug output to the same script in the
-Magnum source tree and recreate the cluster.
+Once you've got the problematic node, you've got 3 levels of debugging
+escalation:
+
+1) You might get lucky and see the problem in the log.
+
+2) If there's no useful information in there other than "this script failed",
+add debug output to the script and re-run it.
+
+3) If the problem requires a pristine VM to reproduce, you'll have to
+add your debug output to the same script in the Magnum source tree and recreate
+the cluster.
 
 -->
 
@@ -401,29 +404,22 @@ Magnum source tree and recreate the cluster.
 
 <!--
 
-We do not have the time to go into detail on all possible issues that can
-cause WaitCondition timeouts here. Please refer to the 40 minute version of
-this talk and its transcript for details. That being said we can quickly sum
-them up here:
-
-There are basically three categories:
+There are three basic categories of wait condition timeout:
 
 1. Network issues where the user-data scripts are unable to reach external
-   issues or attempt or stumble upon certificate validation talking to a Magnum
-   API that uses SSL with self-signed certificates.
+   resources or stumble upon SSL certificate validation.
 
 2. User data scripts failing sporadically at some stage. There are a ton of
    moving parts in there and sometimes they fail. Some we've seen so far:
 
-   * Random service crashes combined with user data script later expecting the
-     service to run.
+   *  Services crashing a little after startup
    * `etcd` or `flannel` acting up when a user data script expects them to work
 
-3. Last but not least, the - normally generous - default timeout of 60 minutes
-   for wait conditions may be too low for very large clusters on very busy
-   clouds. In the rare case where you've got a successful user data script
-   simply taking to long, recreating the cluster with an even bigger timeout
-   will fix the problem.
+3. Last but not least, default timeout of 60 minutes for wait conditions may be
+   too low for very large clusters on very busy clouds. In the rare case where
+   you've got successful user data scripts across the board script they may
+   simply be taking to long. Recreating the cluster with a bigger timeout
+   should fix the problem.
 
 -->
 
@@ -435,8 +431,8 @@ include(common/arch/arch14.md)
 
 # cloud-init configures Kubernetes
 
-Let's assume all cloud-init scripts run fine. Then `cloud-init` configures
-Kubernetes now...
+Let's assume all cloud-init scripts run fine. Then `cloud-init` will have
+configured Kubernetes now...
 
 ![Kubernetes orchestrates Docker](img/magnum_architecture_14.PNG)
 
@@ -456,12 +452,11 @@ include(common/arch/arch16.md)
 
 <!--
 
-And now the user comes along and starts talking to the Kubernetes API...
+And now the user comes along and starts talking to the Kubernetes API.
+There may be any number of problems with that, but this is the point where
+we'd like to refer you to Magnum's own [troubleshooting guide](https://docs.openstack.org/magnum/latest/admin/troubleshooting-guide.html)
+which has a lot of on troubleshooting information on Kubernetes.
 
 ![Kubernetes Credentials from Magnum API](img/magnum_architecture_16.PNG)
 
 -->
-
-## Kubernetes Failures
-
-<!-- TODO slunkad: fill in some Kubernetes errors (maybe some problems caused by cluster_user_trust=False in situations where the trust token is needed -->

@@ -1399,7 +1399,7 @@ that.
 <!--
 
 It is common to use self-signed or certificates signed from CAs that they are
-usually not included in the systems’ default CA-bundles. Magnum clusters with
+usually not included in the systems default CA-bundles. Magnum clusters with
 TLS enabled have their own CA but they need to make requests to the OpenStack
 APIs for several reasons. Eg Signal the Heat API for stack completion, create
 resources (volumes, load balancers) or get information for each node (Cinder,
@@ -1407,7 +1407,7 @@ Neutron, Nova). In these cases, the cluster nodes need the CA used for to run
 the APIs.
 
 To pass the OpenStack CA bundle to the nodes you can set the CA using the
-openstack_ca_file option in the drivers section of Magnum’s configuration file
+openstack_ca_file option in the drivers section of Magnums configuration file
 (usually /etc/magnum/magnum.conf). The default drivers in magnum install this
 CA in the system and set it in all the places it might be needed.
 
@@ -1482,26 +1482,31 @@ pointing the native client to that configuration file.
 * kubectl get nodes
 
 * Troubleshooting:
+
   * Usually this is a configuration issue and you need to check the master and
     minion config files in /etc/kubernetes/
 
-<!--
-
-A few things can go wrong like the apiserver is down which you will see with
-the `kubectl version` command or the minion nodes are not reachable which will
-result in  `kubectl get nodes` returning nothing which again mostly is a config
-related issue.
-
--->
-
-## Kubernetes Networking Failures
-
-* Pods not able to reach each other
+* Pods deployment stuck in ContainerCreating state
 
 * Troubleshooting:
+
+ * Check kube-controller, kube-apiserver and etcd service on master node.
+
+  * Check if *cluster_user_trust* is set in the magnum config file
+
+* Pods stuck in status Pending
+
+* Troubleshooting:
+
+ * Check internet access on the minion nodes.
+
+* Pods and services deployed but application is unreachable
+
+* Troubleshooting:
+
   * Check if neutron is working properly by pinging between the minion nodes.
   * Check if the docker0 and flannel0 interfaces are configured correctly.
-  * Check if node IP's are in the correct flannel subnet, if not docker deamon
+  * Check if node IP's are in the correct flannel subnet, if not docker daemon
     is not configured correct with parameter --bip.
   * Check if flannel is running properly.
   * Check kube_proxy to check if the problem caused  is only on a kubernetes
@@ -1509,6 +1514,24 @@ related issue.
 
 
 <!--
+
+A few things can go wrong like the apiserver is down which you will see with
+the kubectl version command or the minion nodes are not reachable which will
+result in  kubectl get nodes returning nothing which again mostly is a config
+related issue.
+
+The pod can be stuck in creating state due to several reasons but the most
+likely could be that the kubernetes services or etcd is down. Another common
+reason when it happens is when cluster_user_trust is not set in the magnum
+config. This happens in case the OpenStack services need to be reached as a
+part of the pod creation for eg when using cinder as the volume driver for the
+cluster.
+
+The pod status is Pending while the Docker image is being downloaded, so if
+the status does not change for a long time, log into the minion node and check
+for Cluster internet access.
+
+
 Note: This is specific to the default network driver flannel.
 There are different levels at which the network could be broken leading to
 connectivity issues. Firstly, make sure that neutron is working properly and
@@ -1526,10 +1549,9 @@ However, the pods still may not be able to reach each other because normally the
 connect through some Kubernetes services rather than directly. The services are
 supported by the kube-proxy and rules inserted into the iptables, therefore their
 networking paths have some extra hops and there may be problems here.
+
 -->
 
-
-<!-- TODO slunkad: fill in some Kubernetes errors (maybe some problems caused by cluster_user_trust=False in situations where the trust token is needed -->
 
 ## Slides and Transcript
 

@@ -68,6 +68,7 @@ presentation-16-9.odp: presentation.md templates/template-16-9.odp
 	presentation.md templates/template-16-9.odp $@
 
 %.pdf: %.odp
+	rm $(PDF) # pdftk won't overwrite
 	libreoffice --convert-to pdf --outdir $(shell dirname $<) $<
 
 %.html: %.md

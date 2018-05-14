@@ -93,7 +93,7 @@ removes your changes to the `downgrade()` method.
 
 ![User and Monasca API](img/architecture9.Png)
 
-## Persister (`monasca-persister)
+## Persister (`monasca-persister`)
 
 ![User and Monasca API](img/architecture10.Png)
 

@@ -1,5 +1,3 @@
-# Overview
-
 ## Preliminaries: Slides and Transcript
 
 include(src/slides.md)
@@ -67,40 +65,38 @@ removes your changes to the `downgrade()` method.
 
 -->
 
-## Monasca Components
+## Monasca Agent (`monasca-agent`)
 
 ![User and Monasca API](img/architecture3.Png)
 
-## Monasca Components
+## Monasca Client (`python-monascaclient`)
 
 ![User and Monasca API](img/architecture4.Png)
 
-## Monasca Components
-
-## Monasca Components
+## Horizon plugin (`monasca-ui`)
 
 ![User and Monasca API](img/architecture5.Png)
 
-## Monasca Components
+## Message Queue: Interconnects Monasca Components
 
 ![User and Monasca API](img/architecture6.Png)
 
-## Monasca Components
+## Notification Engine (`monasca-notification`)
 
 ![User and Monasca API](img/architecture7.Png)
 
-## Monasca Components
+## Threshold Engine (`monasca-thresh`)
 
 ![User and Monasca API](img/architecture8.Png)
 
-## Monasca Components
+## Transform Engine (`monasca-transform`)
 
 ![User and Monasca API](img/architecture9.Png)
 
-## Monasca Components
+## Persister (`monasca-persister)
 
 ![User and Monasca API](img/architecture10.Png)
 
-## Monasca Components
+## Time Series Database for Measurements
 
 ![User and Monasca API](img/architecture11.Png)

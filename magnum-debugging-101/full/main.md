@@ -1387,9 +1387,31 @@ that.
 
 -->
 
-## TLS Failures
+## Wait Condition Timeout: TLS failure
 
-* Check if openstack_ca_file option is set to the OpenStack CA
+* Usually happens when using self-signed certificates
+
+* Troubleshooting:
+
+  * Check if openstack_ca_file option is set to the OpenStack CA in the driver
+  section in magnum.conf
+
+<!--
+
+It is common to use self-signed or certificates signed from CAs that they are
+usually not included in the systems’ default CA-bundles. Magnum clusters with
+TLS enabled have their own CA but they need to make requests to the OpenStack
+APIs for several reasons. Eg Signal the Heat API for stack completion, create
+resources (volumes, load balancers) or get information for each node (Cinder,
+Neutron, Nova). In these cases, the cluster nodes need the CA used for to run
+the APIs.
+
+To pass the OpenStack CA bundle to the nodes you can set the CA using the
+openstack_ca_file option in the drivers section of Magnum’s configuration file
+(usually /etc/magnum/magnum.conf). The default drivers in magnum install this
+CA in the system and set it in all the places it might be needed.
+
+-->
 
 
 include(common/arch/arch13.md)

@@ -16,34 +16,20 @@ party applications such as Kafka or InfluxDB.
 
 -->
 
-## User...
+## Monasca Metrics API
 
-include(src/arch0.md)
-
-<!--
-
-## User...
-
-Like many stories in our profession, this one starts with a user. That user
-operates a Monasca client.
-
-![User and Monasca API](img/sample0.PNG)
-
--->
-
-include(src/arch1.md)
+![User and Monasca API](img/architecture1.pdf)
 
 <!--
 
-## User and Monasca API
-
-A client alone is not very useful, so on the other side we have the Monasca
-metrics and log APIs running on the cloud's OpenStack controller or a dedicated
-Monasca API node.  The user interacts with Monasca through this API.
-
-![User and Monasca API](img/sample1.PNG)
+## Monasca Metrics API
 
 -->
+
+## Configuration Database
+
+![User and Monasca API](img/architecture2.pdf)
+
 
 ## Creating Database Migrations
 
@@ -80,3 +66,45 @@ model changes to the `upgrade()` method in this file. Please also add code that
 removes your changes to the `downgrade()` method.
 
 -->
+
+## Monasca Components
+
+![User and Monasca API](img/architecture3.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture4.pdf)
+
+## Monasca Components
+
+## Monasca Components
+
+![User and Monasca API](img/architecture5.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture6.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture7.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture8.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture9.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture10.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture11.pdf)
+
+## Monasca Components
+
+![User and Monasca API](img/architecture11.pdf)

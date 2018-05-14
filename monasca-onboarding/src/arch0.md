@@ -1,3 +1,0 @@
-## User...
-
-![User with Monasca Client](img/sample0.PNG)

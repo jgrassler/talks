@@ -18,7 +18,7 @@ party applications such as Kafka or InfluxDB.
 
 ## Monasca Metrics API
 
-![User and Monasca API](img/architecture1.pdf)
+![User and Monasca API](img/architecture1.Png)
 
 <!--
 
@@ -28,7 +28,7 @@ party applications such as Kafka or InfluxDB.
 
 ## Configuration Database
 
-![User and Monasca API](img/architecture2.pdf)
+![User and Monasca API](img/architecture2.Png)
 
 
 ## Creating Database Migrations
@@ -69,42 +69,38 @@ removes your changes to the `downgrade()` method.
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture3.pdf)
+![User and Monasca API](img/architecture3.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture4.pdf)
+![User and Monasca API](img/architecture4.Png)
 
 ## Monasca Components
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture5.pdf)
+![User and Monasca API](img/architecture5.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture6.pdf)
+![User and Monasca API](img/architecture6.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture7.pdf)
+![User and Monasca API](img/architecture7.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture8.pdf)
+![User and Monasca API](img/architecture8.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture9.pdf)
+![User and Monasca API](img/architecture9.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture10.pdf)
+![User and Monasca API](img/architecture10.Png)
 
 ## Monasca Components
 
-![User and Monasca API](img/architecture11.pdf)
-
-## Monasca Components
-
-![User and Monasca API](img/architecture11.pdf)
+![User and Monasca API](img/architecture11.Png)

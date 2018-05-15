@@ -460,3 +460,78 @@ which has a lot of on troubleshooting information on Kubernetes.
 ![Kubernetes Credentials from Magnum API](img/magnum_architecture_16.PNG)
 
 -->
+
+## Kubernetes Failures
+
+* kubectl version
+
+* kubectl get nodes
+
+* Troubleshooting:
+
+  * Configuration issue: check the master and minion config files in /etc/kubernetes/
+
+* Pods deployment stuck in ContainerCreating state
+
+ * Check kube-controller, kube-apiserver and etcd service on master node.
+
+  * Check if *cluster_user_trust* is set in the magnum config file
+
+* Pods stuck in status Pending
+
+* Troubleshooting:
+
+ * Check internet access on the minion nodes.
+
+* Pods and services deployed but application is unreachable
+
+* Troubleshooting:
+
+  * Check if neutron is working properly by pinging between the minion nodes.
+  * Check if the docker0 and flannel0 interfaces are configured correctly.
+  * Check if node IP's are in the correct flannel subnet, if not docker daemon
+    is not configured correct with parameter --bip.
+  * Check if flannel is running properly.
+  * Check kube_proxy to check if the problem caused  is only on a kubernetes
+    level.
+
+<!--
+
+A few things can go wrong like the apiserver is down which you will see with
+the kubectl version command or the minion nodes are not reachable which will
+result in  kubectl get nodes returning nothing which again mostly is a config
+related issue.
+
+The pod can be stuck in creating state due to several reasons but the most
+likely could be that the kubernetes services or etcd is down. Another common
+reason when it happens is when cluster_user_trust is not set in the magnum
+config. This happens in case the OpenStack services need to be reached as a
+part of the pod creation for eg when using cinder as the volume driver for the
+cluster.
+
+The pod status is Pending while the Docker image is being downloaded, so if
+the status does not change for a long time, log into the minion node and check
+for Cluster internet access.
+
+Note: This is specific to the default network driver flannel.
+There are different levels at which the network could be broken leading to
+connectivity issues. Firstly, make sure that neutron is working properly and
+that all the nodes in the cluster are able to ping each other. The networking
+between pods is different and separate from the neutron network set up for the
+cluster. Kubernetes presents a flat network space for the pods and services and
+uses different network drivers to provide this network model. Start by checking
+the interfaces and the docker deamon. Then check flannel which is the default
+network driver for magnum which provides a flat network space for the
+containers in a cluster. Therefore, if Flannel fails, some containers will not
+be able to access services from other containers in the cluster. Lastly, the
+containers created by Kubernetes for pods will be on the same IP subnet as the
+containers created directly in Docker and so they will have the same connectivity.
+However, the pods still may not be able to reach each other because normally they
+connect through some Kubernetes services rather than directly. The services are
+supported by the kube-proxy and rules inserted into the iptables, therefore their
+networking paths have some extra hops and there may be problems here.
+
+-->
+
+
+

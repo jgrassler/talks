@@ -1483,12 +1483,9 @@ pointing the native client to that configuration file.
 
 * Troubleshooting:
 
-  * Usually this is a configuration issue and you need to check the master and
-    minion config files in /etc/kubernetes/
+  * Configuration issue: check the master and minion config files in /etc/kubernetes/
 
 * Pods deployment stuck in ContainerCreating state
-
-* Troubleshooting:
 
  * Check kube-controller, kube-apiserver and etcd service on master node.
 
@@ -1512,7 +1509,6 @@ pointing the native client to that configuration file.
   * Check kube_proxy to check if the problem caused  is only on a kubernetes
     level.
 
-
 <!--
 
 A few things can go wrong like the apiserver is down which you will see with
@@ -1530,7 +1526,6 @@ cluster.
 The pod status is Pending while the Docker image is being downloaded, so if
 the status does not change for a long time, log into the minion node and check
 for Cluster internet access.
-
 
 Note: This is specific to the default network driver flannel.
 There are different levels at which the network could be broken leading to

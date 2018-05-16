@@ -50,6 +50,7 @@ presentation.md: src/*.md
 
 $(PRESENTATION): $(FILES)
 	mkdir -p $(PRESENTATION)
+	touch $(PRESENTATION)
 	tar -cf - img | tar -C $(PRESENTATION) -xf -
 	cp $(FILES) $(PRESENTATION)
 
@@ -88,7 +89,7 @@ img/%.PNG: img/%.dia
 	dia -e $@ -t png $<
 
 
-$(PRESENTATION).tar.bz2:
+$(PRESENTATION).tar.bz2:	$(PRESENTATION)
 	tar -cjf $@ $(PRESENTATION)
 
 clean:

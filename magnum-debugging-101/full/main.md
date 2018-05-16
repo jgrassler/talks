@@ -1487,9 +1487,29 @@ pointing the native client to that configuration file.
 
 * Pods deployment stuck in ContainerCreating state
 
- * Check kube-controller, kube-apiserver and etcd service on master node.
+* Troubleshooting:
+
+  * Check kube-controller, kube-apiserver and etcd service on master node.
 
   * Check if *cluster_user_trust* is set in the magnum config file
+
+<!--
+
+A few things can go wrong like the apiserver is down which you will see with
+the kubectl version command or the minion nodes are not reachable which will
+result in  kubectl get nodes returning nothing which again mostly is a config
+issue.
+
+The pod can be stuck in creating state due to several reasons but the most
+likely could be that the kubernetes services or etcd is down. Another common
+reason when it happens is when cluster_user_trust is not set in the magnum
+config. This happens in case the OpenStack services need to be reached as a
+part of the pod creation for eg when using cinder as the volume driver for the
+cluster.
+
+-->
+
+## Kubernetes Failures
 
 * Pods stuck in status Pending
 
@@ -1510,18 +1530,6 @@ pointing the native client to that configuration file.
     level.
 
 <!--
-
-A few things can go wrong like the apiserver is down which you will see with
-the kubectl version command or the minion nodes are not reachable which will
-result in  kubectl get nodes returning nothing which again mostly is a config
-related issue.
-
-The pod can be stuck in creating state due to several reasons but the most
-likely could be that the kubernetes services or etcd is down. Another common
-reason when it happens is when cluster_user_trust is not set in the magnum
-config. This happens in case the OpenStack services need to be reached as a
-part of the pod creation for eg when using cinder as the volume driver for the
-cluster.
 
 The pod status is Pending while the Docker image is being downloaded, so if
 the status does not change for a long time, log into the minion node and check
@@ -1546,7 +1554,6 @@ supported by the kube-proxy and rules inserted into the iptables, therefore thei
 networking paths have some extra hops and there may be problems here.
 
 -->
-
 
 ## Slides and Transcript
 

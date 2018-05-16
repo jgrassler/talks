@@ -473,7 +473,9 @@ which has a lot of on troubleshooting information on Kubernetes.
 
 * Pods deployment stuck in ContainerCreating state
 
- * Check kube-controller, kube-apiserver and etcd service on master node.
+* Troubleshooting:
+
+  * Check kube-controller, kube-apiserver and etcd service on master node.
 
   * Check if *cluster_user_trust* is set in the magnum config file
 

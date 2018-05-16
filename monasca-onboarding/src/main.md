@@ -601,3 +601,5 @@ to add support for them to Monasca. To do that we will usually have to modify
 3) `monasaca-api`, which reads from the time series database.
 
 -->
+
+include(src/logging.md)

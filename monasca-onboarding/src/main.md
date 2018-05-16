@@ -439,6 +439,43 @@ configuration file, `notification.yaml`.
 
 * Development Information
 
+  * Implemented in Java
+
+  * Contributions may entail changes to `monasca-common`
+
+  * Uses Apache Storm for processing metrics
+
+<!--
+
+## Threshold Engine (`monasca-thresh`)
+
+The other side of notification is taken care of by the Monasca Threshold
+engine. You will find this component in the
+[monasca-thresh](https://github.com/openstack/monasca-thresh) repository.
+
+This components listens in on metrics as they rush by on the message queue and
+checks whether they exceed any alarm thresholds. If they do, `monasca-thresh`
+publishes an alarm to the message queue (that message is then consumed by
+`monasca-notification`). At the same time the alarm will be recorded in the
+Monasca database so it can be visualized in the Monasca UI.
+
+From the development side, `monasca-thresh` is a bit of an odd duck: it's one
+of the services that is entirely implemented in Java with no Python
+implementation existing at the moment.
+
+`monasca-thresh` uses some shared code from the Java part of the
+`monasca-common` library, so you may have to modify `monasca-common` as well if
+you contribute code to `monasca-thresh`.
+
+Last but not least, `monasca-thresh` does not do the heavy lifting all by
+itself. Instead it uses Apache Storm to process metrics.
+
+-->
+
+## Threshold Engine (`monasca-thresh`)
+
+![Treshold Engine](img/architecture8.Png)
+
 ## Transform Engine (`monasca-transform`)
 
 ![Transform Engine](img/architecture9.Png)
@@ -453,7 +490,28 @@ configuration file, `notification.yaml`.
 
   * Republish transformed (usually aggregated) metrics as synthetic new metrics
 
-* Development Information
+<!--
+
+## Transform Engine (`monasca-transform`)
+
+Another component in the metrics processing pipeline is `monasca-transform`.
+You will find it in the
+[monasca-transform](https://github.com/openstack/monasca-transform) repository.
+
+This component takes more of an active role: it consumes metrics the Metrics
+API publishes on the message queue and republishes the metrics themselves and
+the resulting after performing various transformations on them.
+
+The most common transformation is aggregating individual metrics into
+bigger-picture metrics (e.g. summing up the `m1.xlarge` VMs on each compute
+node and publishing that sum as a synthetic metric for each compute node).
+
+-->
+
+## Transform Engine (`monasca-transform`)
+
+![Transform Engine](img/architecture9.Png)
+
 
 ## Persister (`monasca-persister`)
 
@@ -472,6 +530,36 @@ configuration file, `notification.yaml`.
   * Stores metrics in time series database
 
 * Development Information
+
+  * Two implementations: Java and Python
+
+  * Contributions may entail changes to `monasca-common`
+
+<!--
+
+## Persister (`monasca-persister`)
+
+`monasca-persister` is the key element in the metrics processing pipeline.
+You will find it in the [monasca-persister](https://github.com/openstack/monasca-persister) repository.
+
+When all is said and done, its job is very simple: 
+
+It consumes the metrics `monasca-api` and `monasca-transformer` publish to the
+message queue and stores them in the time series database.
+
+There are two `monasca-persister` implementations: a Python and a Java. We are
+planning on deprecating the Java one but for now contributions should still
+target both.
+
+As with other components, `monasca-persister` uses shared code from
+`monasca-common`, so you may have to submit changes to `monasca-common` as
+well if you contribute to `monasca-persister`.
+
+-->
+
+## Persister (`monasca-persister`)
+
+![Persister](img/architecture10.Png)
 
 ## Time Series Database for Measurements
 

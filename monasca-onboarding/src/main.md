@@ -579,3 +579,25 @@ well if you contribute to `monasca-persister`.
 
   * To support a new type of time series database, you will need to add code
     to `monasca-common`, `monasca-api` and `monasca-persister`.
+
+<!--
+
+## Time Series Database for Measurements
+
+Last but not least, we have the heart of Monasca metrics: the time series
+database.
+
+Again, that's a third-party application such as Cassandra, InfluxDB or Vertica.
+
+This database is where we store our metrics data.
+
+Since sometimes new time series databases pop up or become popular, we may have
+to add support for them to Monasca. To do that we will usually have to modify
+
+1) `monasca-common`, which contains some database code shared by all components.
+
+2) `monasca-persister`, which writes to the time series database.
+
+3) `monasaca-api`, which reads from the time series database.
+
+-->

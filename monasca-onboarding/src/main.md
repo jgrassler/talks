@@ -39,7 +39,7 @@ include(src/slides.md)
       MONASCA_API_IMPLEMENTATION_LANG=java
       MONASCA_PERSISTER_IMPLEMENTATION_LANG=java
 
-# Monasca Architecture
+# Monasca Metrics Architecture
 
 <!--
 
@@ -601,5 +601,7 @@ to add support for them to Monasca. To do that we will usually have to modify
 3) `monasaca-api`, which reads from the time series database.
 
 -->
+
+# Monasca Logging Architecture
 
 include(src/logging.md)

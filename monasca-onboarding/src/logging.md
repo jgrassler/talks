@@ -51,8 +51,9 @@ If you modify `monasca-log-api`, you may have to use `monasca-common` as well.
 
 * Purpose: Send logs
 
-* Not part of Monasca: [logstash](https://www.elastic.co/de/products/logstash)
-  or [beaver](https://github.com/python-beaver) with Monasca output plugin.
+* Not part of Monasca: [logstash](https://www.elastic.co/de/products/logstash),
+  [beaver](https://github.com/python-beaver) or
+  [fluentd](https://www.fluentd.org/) with Monasca output plugin.
 
 <!--
 

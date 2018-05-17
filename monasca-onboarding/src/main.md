@@ -20,6 +20,8 @@ include(src/slides.md)
 
   * Introduction to the specifics of Monasca development
 
+  * How can you contribute
+
 * What it is not
 
   * General introduction to OpenStack development
@@ -56,10 +58,6 @@ include(src/slides.md)
 * OP5
 * StackHPC
 * SUSE
-
-## Why would you want to contribute?
-
-
 
 # Monasca Metrics Architecture
 
@@ -112,12 +110,14 @@ this database.
 
   * Makes metrics available for visualization/processing
 
-  * Interface for modifying configuration database
+  * Interface for modifying configuration database (alarms, notifications, ...)
 
 * Development Information
 
   * Most important documentation repository for Monasca: source for
-    https://docs.openstack.org/monasca-api/latest/
+    https://docs.openstack.org/monasca-api
+
+  * API reference: https://github.com/openstack/monasca-api/blob/master/docs/monasca-api-spec.md
 
   * Contains data model for configuration database
     (`monasca-api/monasca_api/common/repositories`)
@@ -147,12 +147,15 @@ repository:
    on https://docs.openstack.org/monasca-api/latest/ are generated from the
    `monasca-api` repository.
 
-2) It contains the data model for the configuration database that is used by
+2) The repository contains full API reference documentation with all important
+   concepts explained.
+
+3) It contains the data model for the configuration database that is used by
    various Monasca services. Whenever you add or remove tables or columns you
    will need to edit the modules in the
    `monasca-api/monasca_api/common/repositories` directory.
 
-3) As of the OpenStack's Rocky release, `monasca-api` will contain the alembic
+4) As of the OpenStack's Rocky release, `monasca-api` will contain the alembic
    migrations for changes to the configuration database. Let's look at that in
    some detail:
 
@@ -219,10 +222,11 @@ Another crucial component is the Monasca agent.
 
   * Collect metrics on monitored systems and forward them to `monasca-api`
 
-  * Only metrics: logs are collected/forwarded by Logstash with
-    [Monasca plugin](https://github.com/logstash-plugins/logstash-output-monasca_log_api)
-
 * Development Information
+
+  * Detailed documentation available in README
+
+  * Easily extendible by adding custom plugins
 
   * Check plugins (for collecting metrics) in `monasca_agent/collector/checks_d`
 
@@ -259,6 +263,9 @@ plugin architecture. There are two sorts of plugins:
 
 If you add a new check plugin, please also try to add a detection plugin.
 Otherwise people will always have to configure your check manually.
+
+3) Custom plugins for metrics specific for your deployment can also be easily
+   integrated.
 
 -->
 
@@ -355,7 +362,7 @@ are used to visualize metrics and logs, respectively.
 
 * Repository
 
-  * N/A (third party component; usually Kafka)
+  * N/A (third party component; Apache Kafka)
 
 * Purpose
 
@@ -457,7 +464,7 @@ configuration file, `notification.yaml`.
 
   * Listen in on metrics and check them against alarm thresholds
 
-  * Pass metrics that exceed thresholds to `monasca-notification`
+  * Produces messages for `monasca-notification` if thresholds exceeded
 
 * Development Information
 
@@ -643,9 +650,9 @@ include(src/logging.md)
       enable_plugin monasca-api \
             git://git.openstack.org/openstack/monasca-api
 
-* `local.conf` additions for Java based Monasca stack
+* `local.conf` setting for Java based persister
 
-      MONASCA_API_IMPLEMENTATION_LANG=java
+      MONASCA_PERSISTER_IMPLEMENTATION_LANG=java
 
 ## Devstack Setup with Vagrant
 
@@ -676,11 +683,8 @@ include(src/logging.md)
 * run tests
 
       # cd /opt/stack/tempest
-      # tempest run -r \
-        monasca_tempest_tests.tests.api
-
-      # tempest run -r \
-        monasca_tempest_tests.tests.log_api
+      # tempest run -r monasca_tempest_tests.tests.api
+      # tempest run -r monasca_tempest_tests.tests.log_api
 
 ## Running tempest tests with monasca-docker
 
@@ -696,6 +700,10 @@ include(src/logging.md)
 * run tests
 
       # docker-compose up -d tempest-tests
+
+# Become part of our community
+
+## Why would you want to contribute?
 
 ## How to contribute?
 

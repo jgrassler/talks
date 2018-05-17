@@ -14,7 +14,7 @@ include(src/slides.md)
 
 * What it is:
 
-  * Primer on Monasca architecture
+  * Primer on Monasca and its architecture
 
   * Overview of Monasca repositories
 
@@ -27,17 +27,39 @@ include(src/slides.md)
   * Refer to [Code & Documentation Contributor Guide](https://docs.openstack.org/contributors/code-and-documentation/index.html)
     for that.
 
-## Devstack Setup for Monasca
+## What is Monasca?
 
-* `local.conf` for default (Python based) Monasca stack
+* Monitoring/Logging-as-a-Service
+  - highly scalable
+  - fault tolerant
+  - performant
+  - multi-tenant
 
-      enable_plugin monasca-api \
-            git://git.openstack.org/openstack/monasca-api
+## What is Monasca?
 
-* `local.conf` additions for Java based Monasca stack
+* Features:
+  - metrics with dimensions (key/value pairs) as metadata
+  - real-time alerting
+  - pluggable notification engine
+  - flexible aggregation engine
 
-      MONASCA_API_IMPLEMENTATION_LANG=java
-      MONASCA_PERSISTER_IMPLEMENTATION_LANG=java
+## Sources of documentation
+
+* https://docs.openstack.org/monasca-api
+* https://wiki.openstack.org/wiki/Monasca
+* http://monasca.io/
+
+## Main contributors
+
+* Fujitsu
+* HPE
+* OP5
+* StackHPC
+* SUSE
+
+## Why would you want to contribute?
+
+
 
 # Monasca Metrics Architecture
 
@@ -542,7 +564,7 @@ node and publishing that sum as a synthetic metric for each compute node).
 `monasca-persister` is the key element in the metrics processing pipeline.
 You will find it in the [monasca-persister](https://github.com/openstack/monasca-persister) repository.
 
-When all is said and done, its job is very simple: 
+When all is said and done, its job is very simple:
 
 It consumes the metrics `monasca-api` and `monasca-transformer` publish to the
 message queue and stores them in the time series database.
@@ -605,3 +627,100 @@ to add support for them to Monasca. To do that we will usually have to modify
 # Monasca Logging Architecture
 
 include(src/logging.md)
+
+## Tutorial
+
+* Interactive Jupyter playbook
+* Demonstrates main Monasca functionalities
+* https://github.com/witekest/monasca-bootcamp/
+
+# Development environment
+
+## Devstack Setup for Monasca
+
+* `local.conf` for default (Python based) Monasca stack
+
+      enable_plugin monasca-api \
+            git://git.openstack.org/openstack/monasca-api
+
+* `local.conf` additions for Java based Monasca stack
+
+      MONASCA_API_IMPLEMENTATION_LANG=java
+
+## Devstack Setup with Vagrant
+
+      # cd monasca-api/devstack
+      # vagrant up
+
+## monasca-docker
+
+* Containerized Monasca deployed with Docker Compose
+
+      # git clone [...]
+      # cd monasca-docker
+      # docker-compose up
+
+* https://github.com/monasca/monasca-docker
+
+## Running unit tests
+
+      # tox -e py27,py35
+
+## Running integration (tempest) tests in Devstack
+
+* add *monasca-tempest-plugin* to `local.conf`
+
+      enable_plugin monasca-tempest-plugin \
+        https://git.openstack.org/openstack/monasca-tempest-plugin
+
+* run tests
+
+      # cd /opt/stack/tempest
+      # tempest run -r \
+        monasca_tempest_tests.tests.api
+
+      # tempest run -r \
+        monasca_tempest_tests.tests.log_api
+
+## Running tempest tests with monasca-docker
+
+* add section to `docker-compose.yaml`:
+
+      tempest-tests:
+        image: monasca/tempest-tests:latest
+        environment:
+          KEYSTONE_SERVER: "keystone"
+          STAY_ALIVE_ON_FAILURE: "true"
+          MONASCA_WAIT_FOR_API: "true"
+
+* run tests
+
+      # docker-compose up -d tempest-tests
+
+## How to contribute?
+
+* [Contributor Guide](https://docs.openstack.org/monasca-api/latest/contributor/index.html)
+* We use StoryBoard!
+  - bugs
+  - feature requests
+* Specifications repository
+  - [openstack/monasca-specs](http://specs.openstack.org/openstack/monasca-specs/)
+
+## Work to do
+
+* Project priorities
+  - http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html
+* Important Tasks and Reviews
+  - https://storyboard.openstack.org/#!/board/60
+
+## Where can you help?
+
+* Reviews
+* Bugfixes
+* Community wide goals
+* Installers
+* Documentation
+
+# Questions?
+
+# Thank You

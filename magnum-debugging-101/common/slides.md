@@ -1,5 +1,3 @@
-## Preliminaries: Further Reading
-
 * Compiled slides (recommended)
 
   * [https://btw23.de/johannes/talks/magnum-debugging-101.tar.bz2](https://btw23.de/johannes/talks/magnum-debugging-101.tar.bz2)
@@ -18,7 +16,7 @@
 
 <!--
 
-## Preliminaries: Slides and Transcript
+# Slides and Transcript
 
 You will find the slides and sources for both the full length and lightning
 talk version of this talk along with a transcript

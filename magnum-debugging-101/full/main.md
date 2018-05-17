@@ -1,5 +1,7 @@
 # Overview
 
+# Preliminaries: Slides and Transcript
+
 include(common/slides.md)
 
 include(common/intro.md)
@@ -48,8 +50,8 @@ include(common/arch/arch2.md)
 # Describe Cluster in ClusterTemplate
 
 As mentioned before, the first thing we need is a cluster template. This is how
-the user tells Magnum which orchestration engine to provide, and which image to
-use and many other things.
+the user tells Magnum which orchestration engine to configure, which glance
+image to use and many other things.
 
 ![Describe Cluster in ClusterTemplate](img/magnum_architecture_2.PNG)
 
@@ -232,7 +234,11 @@ the cluster's `status_reason` attribute.
 
 <!--
 
-At this stage, a couple of validation errors may occur.
+If you encounter a `CREATE_FAILED` just a few seconds after cluster creation
+you are probably dealing with some sort of early validation error.
+
+These vary across Openstack releases as checks are ocasionally added and
+removed.
 
 -->
 
@@ -253,7 +259,7 @@ At this stage, a couple of validation errors may occur.
 
 <!--
 
-First of these is a failure to obtain a discovery URL from the public `etcd`
+One example is a failure to obtain a discovery URL from the public `etcd`
 discovery service.
 
 ```
@@ -261,9 +267,11 @@ Failed to get discovery url from 'https://discovery.etcd.io/new?size=1'
 ```
 
 This URL would ordinarily be passed to the Magnum clusters' VMs so they can
-coordinate using an `etcd` cluster. This typically happens if the machine where
-the Magnum services run cannot access the Internet or a local `etcd` discovery
-service (if one has been specified).
+coordinate using an `etcd` cluster.
+
+This typically happens if the machine where the Magnum services run cannot
+access the Internet or a local `etcd` discovery service (if one has been
+specified).
 
 -->
 
@@ -286,19 +294,25 @@ service (if one has been specified).
 
 <!--
 
-Another one is an error that can meanwhile no longer occur: some cluster's
-require the (somewhat insecure) `cluster_user_trust` setting to be set to
-`True`:
+Another one is an error that can meanwhile no longer occur: 
+
+some clusters require the (somewhat insecure) `cluster_user_trust` setting to
+be set to `True`:
 
 ```
 This cluster can only be created with trust/cluster_user_trust = True in magnum.conf`
 ```
 
 Nowadays the heuristic checking for clusters that may require this setting has
-been removed. You may still see this error on clouds running OpenStack Newton,
-but on more recent releases it will not occur. You will see various later
-failures on clouds that require this setting to be set to `True`, though. We
-will cover some of these later.
+been removed.
+
+You may still see this error on clouds running OpenStack Newton,
+but on more recent releases it will not occur.
+
+You will see various later failures on clouds that require this setting to be
+set to `True`, though.
+
+We will show you what that looks like that in the Kubernetes debugging section.
 
 -->
 
@@ -310,8 +324,10 @@ include(common/arch/arch5.md)
 
 Now that the Magnum API has gotten a request to create a cluster, it does what
 most OpenStack API services do when they receive a request to create a
-resource: it passes a RabbitMQ message to its backend service,
-magnum-conductor, which is tasked with the actual work of creating the cluster.
+resource: 
+
+it passes a RabbitMQ message to its backend service, magnum-conductor, which is
+tasked with the actual work of creating the cluster.
 
 ![API to Conductor: "Create Cluster, please"](img/magnum_architecture_5.PNG)
 
@@ -325,12 +341,19 @@ include(common/arch/arch6.md)
 
 Now magnum-conductor looks at both the Cluster's and the Cluster Template's
 attributes and uses that information to stitch together a Heat template
-implementing the cluster the user requested, in our case a Kubernetes cluster
-on OpenSUSE. Magnum comes with drivers for various operating systems and
-orchestration engines. All of these come with Heat templates that get assembled
-into a nested Heat stack and lots of little shell scripts to deploy the cluster
-instances that Magnum will mix and match inside the Heat templates' user data
-payloads. I marked this step in red since we'll refer back to it later.
+implementing the cluster the user requested.
+
+In our case this is a Kubernetes cluster on OpenSUSE. 
+
+Magnum comes with drivers for various operating systems and
+orchestration engines.
+
+All of these come with Heat templates for resource creation and lots of
+little shell scripts for setting up the cluster nodes.
+
+These scripts are mixed and matched to form each node's user data payload.
+
+We marked this step in red since we'll refer back to it later.
 
 ![Generate a Heat Template Matching Cluster](img/magnum_architecture_6.PNG)
 
@@ -414,9 +437,11 @@ include(output/conductor-down)
 
 * If you do get an error message after a bit, your problem is a lack of
   RabbitMQ messages magnum-api expects in response to the messages it sent for
-  magnum-conductor. That usually means that there's no magnum-conductor
-  listening to the RabbitMQ message queue, usually because it has crashed. In
-  that case, restart magnum-conductor.
+  magnum-conductor.
+  
+  That usually means that there's no magnum-conductor listening to the RabbitMQ
+  message queue, usually because it has crashed. In that case, check whether
+  magnum-conductor is running properly.
 
 -->
 
@@ -440,9 +465,11 @@ include(output/conductor-down)
 
 <!--
 
-If you see an indefinite hang that usually means that magnum-api cannot reach
-RabbitMQ. Once RabbitMQ is back up you will see the Magnum client fail with the
-same timeout error message.
+* If you see an indefinite hang that usually means that magnum-api cannot reach
+  RabbitMQ. 
+  
+  Once RabbitMQ is back up you will see the Magnum client fail with the same
+  timeout error message.
 
 -->
 
@@ -466,12 +493,8 @@ include(common/arch/arch8.md)
 # Heat Creates VMs and Plumbing
 
 ...which goes and spawns Nova instances, interconnects them with Neutron
-networks, assigns Floating IPs and all the ingredients that go into a working
-Heat stack. I won't go into any detail on this now, because last year's
-[Heat workshop](https://github.com/SUSE/cloud/tree/master/presentations/2016-support-enablement-training/heat-workshop)
-covers that part in far more detail than we could possibly fit here. At the
-end of this process we'll have Nova instances with network connectivity up and
-running, and we're primarily interested of what happens inside these.
+networks, assigns Floating IPs and adds all the ingredients that go into a
+working Heat stack.
 
 ![Heat Creates VMs and Plumbing](img/magnum_architecture_8.PNG)
 
@@ -479,21 +502,14 @@ running, and we're primarily interested of what happens inside these.
 
 ## Early `CREATE_FAILED` from Heat
 
-<!--
-
-If cluster creation takes a little longer to fail, we may see creation failures
-passed through from Heat.
-
--->
-
 ## Early `CREATE_FAILED` from Heat
 
 * "early": 30 seconds to a few minutes after `cluster create`
 
 <!--
 
-"A little longer" usually means something on the order of 30 seconds to a few
-minutes.
+If cluster creation fails after about 30 seconds to a few minutes, we may see
+creation failures passed through from Heat.
 
 -->
 
@@ -530,8 +546,10 @@ To see these errors passed through from Heat we will once again issue a
 
 <!--
 
-Again, we will see a status of `CREATE_FAILED`. From this point onward any
-status we see in this field will be the Heat stack's state, by the way.
+Again, we will see a status of `CREATE_FAILED`.
+
+From this point onward any status we see in this field will be the Heat stack's
+state, by the way.
 
 -->
 
@@ -549,8 +567,11 @@ status we see in this field will be the Heat stack's state, by the way.
 
 <!--
 
-And just like with the earlier Magnum errors, the `status_reason` attribute will contain a detailed error message.
-That error message is now drawn from the Heat stack's `stack_status_reason` attribute.
+And just like with the earlier Magnum errors, the `status_reason` attribute
+will contain a detailed error message.
+
+From here on out, that error message is usually copied verbatim from the Heat
+stack's `stack_status_reason` attribute.
 
 -->
 
@@ -570,7 +591,8 @@ That error message is now drawn from the Heat stack's `stack_status_reason` attr
 
 <!--
 
-There are a myriad reasons a Heat stack may fail to deploy. The most common ones are from two categories:
+There are a myriad reasons a Heat stack may fail to deploy. The most common
+ones are from two categories:
 
 -->
 
@@ -593,8 +615,11 @@ There are a myriad reasons a Heat stack may fail to deploy. The most common ones
 <!--
 
 1. Resource exhaustion issues, such as the popular `No valid host was found`
-   reported by Nova. Magnum is fairly likely to trigger this problem if you
-   create big clusters or large numbers of clusters...
+   reported by Nova.
+   
+   Magnum is fairly likely to trigger this problem if you create big
+   clusters or lots of clusters since each cluster consumes a non-trivial
+   amount of resources.
 
 -->
 
@@ -618,10 +643,14 @@ There are a myriad reasons a Heat stack may fail to deploy. The most common ones
 
 <!--
 
-2. Exceeded quotas. Floating IPs usually tend to be genuinely scarce, with
-   correspondingly tight quotas. Everything else, such as networks or volumes
-   often suffers from small default quotas somebody forgot to increase when
-   creating a project.
+2. Exceeded quotas are fairly common, too.
+
+   For instance, floating IPs usually tend to be genuinely scarce, with
+   correspondingly tight quotas.
+   
+   Everything else, such as networks or volumes often suffers from small
+   default quotas the cloud operator forgot to increase when creating a new
+   project.
 
 In both cases the problem is not really Magnum but the resources available on
 the Cloud you are trying to build a Magnum cluster on.
@@ -634,8 +663,12 @@ include(common/arch/arch9.md)
 
 # VMs Run Container Friendly OS Image
 
-First of all, the VMs run a container friendly operating system image. That may
-be our own OpenSUSE Kubernetes image, Fedora Atomic, CoreOS or Ubuntu Mesos.
+Now we're at the point, where we've got operational VMs running a container
+friendly operating system image.
+
+That may be our own OpenSUSE JeOS image (we are currently working on
+getting this properly integrated upstream), Fedora Atomic, CoreOS or Ubuntu Mesos.
+
 That image should have all or at least most packages required for running the
 requested container orchestration engine already installed and Magnum will
 mostly only configure them.
@@ -650,10 +683,12 @@ include(common/arch/arch10.md)
 
 # VMs Run Container Friendly OS Image
 
-Configuration is where the red stuff from earlier comes into play again. I
-mentioned before that there is pool of deployment scripts Magnum picks from
-when generating its Heat templates. These got passed into Heat as a CloudConfig
-resource.
+Configuration is where the red stuff from earlier comes into play again.
+
+We mentioned before that there is pool of deployment scripts Magnum picks from
+when generating its Heat templates.
+
+These got passed into Heat as a CloudConfig resource.
 
 ![CloudConfig Snippets...](img/magnum_architecture_10.PNG)
 
@@ -665,8 +700,8 @@ include(common/arch/arch11.md)
 
 # CloudConfig Snippets Become user-data
 
-This CloudConfig resource ends up as a user-data payload on the Nova instances
-now.
+This CloudConfig resource ends up as a cloud-init user data payload on the Nova
+instances now.
 
 ![CloudConfig Snippets Become user-data](img/magnum_architecture_11.PNG)
 
@@ -702,10 +737,11 @@ condition timeout.
 
 <!--
 
-Just like the other errors, you this error will be visible in the cluster's
-`status_reason` field: Whenever there is a
-`Resource CREATE failed: WaitConditionTimeout`, in there, you are facing this
-problem.
+Just like the other errors, this error will be visible in the cluster's
+`status_reason` field:
+
+Whenever there is a `Resource CREATE failed: WaitConditionTimeout`, in there,
+you are facing this problem.
 
 -->
 
@@ -720,7 +756,8 @@ problem.
 <!--
 
 Wait condition timeouts are the most common failure mode for Magnum clusters.
-The causes vary, but most problems will manifest as a wait condition timeout.
+
+They can occur for a variety of reasons, some of which we'll take a closer look at now.
 
 -->
 
@@ -748,16 +785,21 @@ The causes vary, but most problems will manifest as a wait condition timeout.
 
 <!--
 
-As you already know, Magnum creates its clusters by generating
-and instantiating a Heat template. That template cannot just
-spawn all VMs at once but needs to create them in a certain
-order: for instance, it does not make a lot of sense to launch
-Kubernetes minions before the Kubernetes master is up and
-running. To impose that order, a Heat mechanism called a wait
-condition is used. These wait conditions consist of a magic
-Heat API URL that is accessed from inside a VM and counter in
-the Heat database that gets incremented each time the URL is
-accessed.
+As you already know, Magnum creates its clusters by generating and
+instantiating a Heat template. 
+
+That template cannot just spawn all VMs at once but needs to create them in a
+certain order.
+
+For instance, it does not make a lot of sense to launch Kubernetes minions
+before the Kubernetes master is up and running.
+
+To ensure that order is followed, a Heat mechanism called a wait condition is
+used.
+
+These wait conditions consist of a magic Heat API URL that is accessed from
+inside a VM and a counter in the Heat database that gets incremented each time
+the URL is accessed.
 
 -->
 
@@ -780,10 +822,10 @@ accessed.
 
 <!--
 
-All wait conditions have a timeout associated with them. If a
-wait condition is not triggered a sufficient number of times,
-the Heat resource defining the wait condition transitions to
-the `CREATE_FAILED` state.
+All wait conditions have a timeout associated with them.
+
+If a wait condition is not triggered a sufficient number of times, the Heat
+resource defining the wait condition transitions to the `CREATE_FAILED` state.
 
 -->
 
@@ -806,10 +848,15 @@ the `CREATE_FAILED` state.
 <!--
 
 Whenever a wait condition times out, it means that something went wrong while a
-VM was running its user data payload. At the very end of the user data payload
-there is a curl command that accesses the wait condition's magic URL.
-If any of the code running before that curl command fails, it will never signal
-the wait condition.
+VM was running its user data payload.
+
+At the very end of the user data payload there is a curl command that accesses
+the wait condition's magic URL.
+
+If any of the scripts running before that curl command exits non-zero,
+cloud-init will stop executing user data scripts.
+
+Thus the script that signals the wait condition will never run.
 
 -->
 
@@ -906,16 +953,25 @@ $ include(cmd/find-wait-condition.sh)include(output/failed-master-wait-condition
 
 We are only interested in the first and last columns here, hence the `awk` We
 need the first column to see whether a Kubernetes master or minion is affected.
+
 If we only have a single master setup that already tells us which machine to
-log in to in the next step. If we have a multi master setup we need to use the
-Heat stack name from the last column to look up the problematic node's floating
-IP address: Magnum creates a nested Heat stack for each cluster node. Each of
-these nested stacks comes with its own wait condition. The command shown above
-will list all of these since it will descend into the nested stacks
-recursively. If we do have multiple masters, we need to do an additional
-`openstack stack resource-show` on that stack's floating IP resource to find
-the floating IP to `ssh` to. Otherwise sshing to the only machine in the list
-of `master_addresses` shown by `openstack coe cluster show` will suffice.
+log in to in the next step.
+
+If we have a multi master setup we need to use the Heat stack name from the
+last column to look up the problematic node's floating IP address.
+
+Magnum creates a nested Heat stack for each cluster node.
+
+Each of these nested stacks comes with its own wait condition.
+
+The command shown above will list all of these since it will descend into the
+nested stacks' resources recursively.
+
+Once we have found the failed wait condition we search for its stack name in
+the same resource list and pick out the FloatingIP resource in that same stack.
+
+We perform a `openstack stack resource-show` on that floating IP and get the IP
+address to SSH to.
 
 -->
 
@@ -937,8 +993,9 @@ $ include(cmd/find-wait-condition.sh)include(output/failed-master-wait-condition
 
 <!--
 
-For ssh is what we will need for the final step: we need to log in to the
-machine for which the wait condition failed and examine its cloud init log:
+The final step happens on the machine behind the floating IP machine we SSHed to.
+
+We need to examine its cloud-init log:
 
 -->
 
@@ -1013,10 +1070,15 @@ discover the other `etcd` cluster members.
 <!--
 
 While there is the sanity check in the Magnum API we mentioned earlier, that
-only checks for reachability from the machine the Magnum API runs on. That
-machine is unlikely to be in the same network the Magnum cluster's floating IPs
-access the world from. And that network is often a less-than-favourable vantage
-point in an enterprise network. For there may be...
+only checks for reachability from the machine the Magnum API runs on.
+
+That machine is unlikely to be in the same network the Magnum cluster's
+floating IPs access the world from.
+
+And that network is often a less-than-favourable vantage point in an enterprise
+network.
+
+For there may be...
 
 -->
 
@@ -1081,7 +1143,7 @@ point in an enterprise network. For there may be...
 
 <!--
 
-3. ...a DNS setup that yields a `NXDOMAIN` for the etcd URL either because it
+3. ...a DNS setup that yields a `NXDOMAIN` for the etcd URL, either because it
    only resolves internal URLs or because `discovery.etcd.io` is filtered to
    keep users from leaking internal information that way.
 
@@ -1143,8 +1205,9 @@ cluster status check: error connecting to https://discovery.etcd.io, retrying in
 <!--
 
 Alternatively, you can check whether you are facing this problem by running
-`curl` on the cluster's `etcd` discovery URL from the affected VM. You will
-find this URL in the cluster's `discovery_url` attribute)
+`curl` on the cluster's `etcd` discovery URL from the affected VM.
+
+You will find this URL in the cluster's `discovery_url` attribute)
 
 -->
 
@@ -1155,8 +1218,10 @@ find this URL in the cluster's `discovery_url` attribute)
 ## Wait Condition Timeout: User Data Script Fails
 
 If the problem is not etcd, some other part of the user data scripts may have
-gone haywire. We will not go into detail here, for these may fail at any point
-and time is rather limited.  The debugging process is always the same, though:
+gone haywire.
+
+We will not go into detail here, for these may fail at any point and time is
+rather limited. The debugging process is always the same, though.
 
 -->
 
@@ -1168,8 +1233,8 @@ and time is rather limited.  The debugging process is always the same, though:
 
 ### Background
 
-First of all a little refresher on how a Magnum cluster's nodes are being
-deployed.
+First of all, let's have a little refresher on how a Magnum cluster's nodes are
+being deployed.
 
 -->
 
@@ -1181,10 +1246,13 @@ deployed.
 
 <!--
 
-Each node runs multiple `cloud-init` user data script. There's usually around
-six to eight of these. The exact number and type of scripts varies depending on
-the platform, container orchestration engine and various attributes such as the
-volume driver.
+Each node runs multiple `cloud-init` user data scripts.
+
+There's usually around six to eight of these.
+
+The exact number and type of scripts varies depending on the platform,
+container orchestration engine and various other attributes such as the volume
+driver.
 
 -->
 
@@ -1214,7 +1282,7 @@ Any of these scripts may fail for all sorts of reasons.
 
 <!--
 
-Debugging is rather straightforward:
+If one of them fails, debug the problem as follows:
 
 -->
 
@@ -1233,10 +1301,14 @@ Debugging is rather straightforward:
 
 <!--
 
-First of all, log into the VM for which the wait condition timed out (you can
-figure out which VM to look at using the debugging tools we already mentioned)
-and look at `/var/log/cloud-init-output.log`. If you are lucky this will
-already contain useful information that shows you exactly what the problem is.
+First of all, log into the VM for which the wait condition timed out.
+
+We already covered this part earlier.
+
+On that machine, take a look at `/var/log/cloud-init-output.log`.
+
+If you are lucky this log will already contain useful information that shows you
+exactly what the problem is.
 
 -->
 
@@ -1253,19 +1325,49 @@ already contain useful information that shows you exactly what the problem is.
   * `/var/log/cloud-init-output.log` on the affected node should give you a first
     idea of what went wrong.
 
-  * You may have to modify Magnum's user data fragments (`fragments/` directories
-    under `magnum/drivers/`) to add additional debugging output (or directly in
-    `/var/lib/cloud/instance/scripts` on the VM).
+  * Re-run failed script from `/var/lib/cloud/instance/scripts` with debugging
+    output
 
 <!--
 
-Sometimes you will not be lucky though and you will only see a non-zero exit
-status somewhere that does not tell you much by itself. In that case you can
-edit the cloud-init fragments. You can either do that on the VM in question
-(you will find them in `/var/lib/cloud/instance/scripts`) and re-run them or
-you can modify them in the Magnum source tree on your controller node if you've
-got that level of access. Where exactly the Magnum source tree resides depends
-on your controller's operating system.
+Usually you will not be lucky though and you will only see a non-zero exit
+status for a particular script, without knowing why that happened.
+
+In that case you can add debugging output to the failed user data script and
+re-run it.  You will find the scripts in `/var/lib/cloud/instance/scripts`.
+
+-->
+
+## Wait Condition Timeout: User Data Script Fails
+
+* Background 
+
+  * Each node is set up by multiple `cloud-init` user data scripts
+
+  * Any of these scripts may fail on one or more nodes
+
+* Debugging
+
+  * `/var/log/cloud-init-output.log` on the affected node should give you a first
+    idea of what went wrong.
+
+  * Re-run failed script from `/var/lib/cloud/instance/scripts` with debugging
+    output
+
+  * You may have to modify Magnum's user data fragments (`fragments/` directories
+    under `magnum/drivers/`) to add additional debugging output.
+
+<!--
+
+If the problem is only reproducible on a pristine node, your last resort is
+modifying the script in the Magnum source tree on your controller node if you've
+got that level of access. 
+
+You will find the user data scripts in one of the `fragments/` directories
+under `magnum/drivers` in the Magnum source tree.
+
+Where exactly the Magnum source tree resides depends on your controller's
+operating system and whether you installed Magnum from a package or via `pip`.
 
 -->
 
@@ -1293,6 +1395,7 @@ on your controller's operating system.
 
 Editing the fragments in the Magnum source tree is a bit tedious since it
 requires recreating the cluster with the modified fragments in place.
+
 Nonetheless this is sometimes required since the node may no longer be in the
 state it needs to be in if you re-run one of the `cloud-init` fragments.
 
@@ -1314,7 +1417,8 @@ run without any problems, the problem is the wait condition timeout itself.
 <!--
 
 This usually happens when deploying large clusters on large, busy clouds. On
-such a cloud, cluster deployment may take longer than a wait condition's time out.
+such a cloud, cluster deployment may take longer than a wait condition's time
+out.
 
 -->
 
@@ -1328,8 +1432,10 @@ such a cloud, cluster deployment may take longer than a wait condition's time ou
 <!--
 
 This used to be a fairly common problem in the past but nowadays it has become
-quite rare: the default timeout for wait conditions is a generous 60 minutes,
-which should suffice for most clusters.
+quite rare:
+
+the default timeout for wait conditions is a generous 60 minutes, which should
+suffice for most clusters and clouds.
 
 -->
 
@@ -1381,9 +1487,10 @@ node did indeed suceed, to rule out any other issues.
 
 <!--
 
-If it did indeed succeed, check how long deployment took (just check the
-cluster's `created_at` time stamp) and recreate it with a longer timeout than
-that.
+If it did succeed, check how long deployment took (just check the cluster's
+`created_at` time stamp) against the wait condition's time stamp.
+
+Now recreate the cluster with a timeout that exceeds this time span.
 
 -->
 
@@ -1393,23 +1500,30 @@ that.
 
 * Troubleshooting:
 
-  * Check if openstack_ca_file option is set to the OpenStack CA in the driver
+  * Check if `openstack_ca_file option` is set to the OpenStack CA in the driver
   section in magnum.conf
 
 <!--
 
-It is common to use self-signed or certificates signed from CAs that they are
-usually not included in the systems default CA-bundles. Magnum clusters with
-TLS enabled have their own CA but they need to make requests to the OpenStack
-APIs for several reasons. Eg Signal the Heat API for stack completion, create
-resources (volumes, load balancers) or get information for each node (Cinder,
-Neutron, Nova). In these cases, the cluster nodes need the CA used for to run
-the APIs.
+It is common to use self-signed or certificates signed from CAs that are
+usually not included in the systems' default CA-bundles.
+
+Magnum cluster nodes with TLS enabled have their own CA but they need to make
+requests to the OpenStack APIs for several reasons: 
+
+* Signal deployment completion through the Heat API 
+* Create resources (volumes, load balancers) or get information for each node
+  (Cinder, Neutron, Nova).
+
+In these cases, the cluster nodes need the CA certificate that signed the APIs'
+SSL certificates.
 
 To pass the OpenStack CA bundle to the nodes you can set the CA using the
 openstack_ca_file option in the drivers section of Magnums configuration file
-(usually /etc/magnum/magnum.conf). The default drivers in magnum install this
-CA in the system and set it in all the places it might be needed.
+(usually /etc/magnum/magnum.conf).
+
+The default drivers in magnum install this CA in the system and set it in all
+the places it might be needed.
 
 -->
 
@@ -1422,11 +1536,12 @@ include(common/arch/arch13.md)
 
 Since Magnum put together a user-data payload for deploying Kubernetes, we will
 hopefully end up with working Kubernetes once cloud-init has run to
-conclusion. "Hopefully" because this same process happens on all cluster
-instances, which will also need to coordinate with each other using etcd to set
-up their Flannel overlay networking, so there are plenty of moving parts and
-opportunities for things to go sideways. We'll take a look at some of these
-problems in the hands-on part later.
+conclusion.
+
+"Hopefully" because this same process happens on all cluster instances, which
+will also need to coordinate with each other using etcd to set up their Flannel
+overlay networking, so there are plenty of moving parts and opportunities for
+things to go sideways.
 
 ![cloud-init configures Kubernetes](img/magnum_architecture_13.PNG)
 
@@ -1461,29 +1576,52 @@ include(common/arch/arch16.md)
 <!--
 
 This is where the Magnum API comes into play again: when Magnum creates a
-cluster, it knows where the cluster's APIs reside, of course. It also generates
-and configures access credentials. The Magnum API is equipped to share that
-information with a cluster's creating user, and the Magnum client in turn comes
-with a very convenient mechanism for putting that facility to good use: its
-cluster-config operation will request access credentials for the container
-orchestration engine's API and generate configuration for its native API
-client and write it to a file. In our case that client is the kubernetes
-client, kubectl. Magnum will also output a shell environment suitable for
-pointing the native client to that configuration file.
+cluster, it knows where the cluster's APIs reside, of course.
+
+It also generates and configures access credentials.
+
+The Magnum API is equipped to share that information with a cluster's creating
+user, and the Magnum client in turn comes with a very convenient mechanism for
+putting that facility to good use:
+
+its cluster-config operation will request access credentials for the container
+orchestration engine's API, generate configuration for its native API
+client and write it to a file.
+
+In our case that client is the kubernetes client, `kubectl`.
+
+Magnum will also output a shell environment suitable for pointing the native
+client to that configuration file.
 
 ![Kubernetes Credentials from Magnum API](img/magnum_architecture_16.PNG)
 
 -->
 
-## Kubernetes Failures
+## Kubernetes Failures: API server/minions down
 
-* kubectl version
+* Basic commands
 
-* kubectl get nodes
+  * `kubectl version`
 
-* Troubleshooting:
+  * `kubectl get nodes`
 
-  * Configuration issue: check the master and minion config files in /etc/kubernetes/
+* If commands return nothing:
+
+  * Configuration issue: check the master and minion config files in `/etc/kubernetes/`
+
+<!--
+
+Sometimes the API service is simply unreachable which you will see with the
+kubectl version command. 
+
+Sometimes the minion nodes are not reachable which will result in `kubectl get
+nodes` returning.
+
+This is usually a configuration issue.
+
+-->
+
+## Kubernetes Failures: Pods stuck in `ContainerCreating`
 
 * Pods deployment stuck in ContainerCreating state
 
@@ -1495,27 +1633,40 @@ pointing the native client to that configuration file.
 
 <!--
 
-A few things can go wrong like the apiserver is down which you will see with
-the kubectl version command or the minion nodes are not reachable which will
-result in  kubectl get nodes returning nothing which again mostly is a config
-issue.
 
-The pod can be stuck in creating state due to several reasons but the most
-likely could be that the kubernetes services or etcd is down. Another common
-reason when it happens is when cluster_user_trust is not set in the magnum
-config. This happens in case the OpenStack services need to be reached as a
-part of the pod creation for eg when using cinder as the volume driver for the
-cluster.
+The pod can be stuck in creating for various reasons. 
+
+The most common ones are kubernetes services or etcd being down.
+
+It also may happens due to `cluster_user_trust` is not being in
+the magnum config.
+
+This happens in case the OpenStack services need to be reached as a part of the
+pod creation process, for instance when using cinder as the volume driver for
+the cluster.
 
 -->
 
-## Kubernetes Failures
+## Kubernetes Failures: Pods stuck in `Pending`
 
 * Pods stuck in status Pending
 
 * Troubleshooting:
 
  * Check internet access on the minion nodes.
+
+<!--
+
+The pod status is `Pending` while the Docker image is being downloaded, so if
+the status does not change for a long time, log into the minion node and check
+if it can access the Internet.
+
+Likewise, if you specified a local Docker registry, make sure the minion node
+can reach it.
+
+-->
+
+## Kubernetes Failures: Application Unreachable
 
 * Pods and services deployed but application is unreachable
 
@@ -1526,44 +1677,38 @@ cluster.
   * Check if node IP's are in the correct flannel subnet, if not docker daemon
     is not configured correct with parameter --bip.
   * Check if flannel is running properly.
-  * Check kube_proxy to check if the problem caused  is only on a kubernetes
+  * Check `kube_proxy` to check if the problem caused  is only on a kubernetes
     level.
 
 <!--
 
-The pod status is Pending while the Docker image is being downloaded, so if
-the status does not change for a long time, log into the minion node and check
-for Cluster internet access.
+This one is specific to the flannel network driver (which is the default).
 
-Note: This is specific to the default network driver flannel.
 There are different levels at which the network could be broken leading to
-connectivity issues. Firstly, make sure that neutron is working properly and
-that all the nodes in the cluster are able to ping each other. The networking
-between pods is different and separate from the neutron network set up for the
-cluster. Kubernetes presents a flat network space for the pods and services and
-uses different network drivers to provide this network model. Start by checking
-the interfaces and the docker deamon. Then check flannel which is the default
-network driver for magnum which provides a flat network space for the
-containers in a cluster. Therefore, if Flannel fails, some containers will not
-be able to access services from other containers in the cluster. Lastly, the
-containers created by Kubernetes for pods will be on the same IP subnet as the
-containers created directly in Docker and so they will have the same connectivity.
-However, the pods still may not be able to reach each other because normally they
-connect through some Kubernetes services rather than directly. The services are
-supported by the kube-proxy and rules inserted into the iptables, therefore their
-networking paths have some extra hops and there may be problems here.
+connectivity issues.
 
--->
+Firstly, make sure that neutron is working properly and that all the nodes in
+the cluster are able to ping each other.
 
-## Slides and Transcript
+The networking between pods is different and separate from the neutron network
+set up for the cluster.
 
-include(common/slides.md)
+Kubernetes presents a flat network space for the pods and services and uses
+different network drivers to provide this network model.
 
-<!--
+* Start by checking the interfaces and the docker deamon.
 
-This concludes the introduction part. We are putting up the URL to the slides
-again, because the slides and the supporting material (especially the little
-code snippets you can paste from in a pinch) will come in handy for the hand-on
-part. Does everybody have the slides? If you do not, please download them now.
+* Then check flannel. Flannel is the default network driver for magnum which
+  provides a flat network space for the containers in a cluster. Therefore, if
+  Flannel fails, some containers will not be able to access services from other
+  containers in the cluster.
+  
+* Finally, the containers created by Kubernetes for pods will be on the same IP
+  subnet as the containers created directly in Docker and so they will have the
+  same connectivity. However, the pods still may not be able to reach each
+  other because normally they connect through Kubernetes services rather than
+  directly. The services are supported by the `kube-proxy` service and rules
+  inserted into `iptables`. Therefore their networking paths have some extra
+  hops, one of which may come with extra problems.
 
 -->

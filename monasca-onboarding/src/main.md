@@ -20,7 +20,7 @@ include(src/slides.md)
 
   * Introduction to the specifics of Monasca development
 
-  * How can you contribute
+  * How can you contribute?
 
 * What it is not
 
@@ -65,8 +65,8 @@ include(src/slides.md)
 
 # Architecture and Development
 
-We will now give you a guided tour of Monasca's architecture diagram mixed in
-with a quick rundown on each component. We will include extra information
+We will now give you a guided tour of Monasca's architecture mixed in
+with a quick run-down on each component. We will include extra information
 relevant to developers where applicable.
 
 -->
@@ -79,7 +79,7 @@ relevant to developers where applicable.
 
 ## Monasca Metrics API
 
-The Monasca metrics API is the center piece of Monasca. It receives metrics
+The Monasca metrics API is the central piece of Monasca. It receives metrics
 from agents, makes these metrics available to clients and is used for defining
 alarms and thresholds.
 
@@ -147,8 +147,8 @@ repository:
    on https://docs.openstack.org/monasca-api/latest/ are generated from the
    `monasca-api` repository.
 
-2) The repository contains full API reference documentation with all important
-   concepts explained.
+2) The repository contains full [API reference](https://github.com/openstack/monasca-api/blob/master/docs/monasca-api-spec.md)
+   documentation with all important concepts explained.
 
 3) It contains the data model for the configuration database that is used by
    various Monasca services. Whenever you add or remove tables or columns you
@@ -637,7 +637,7 @@ include(src/logging.md)
 
 ## Tutorial
 
-* Interactive Jupyter playbook
+* Interactive Jupyter notebook
 * Demonstrates main Monasca functionalities
 * https://github.com/witekest/monasca-bootcamp/
 
@@ -704,6 +704,10 @@ include(src/logging.md)
 # Become part of our community
 
 ## Why would you want to contribute?
+
+* modular
+* customisable
+* small and friendly community
 
 ## How to contribute?
 

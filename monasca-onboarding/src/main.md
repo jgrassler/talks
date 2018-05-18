@@ -10,13 +10,21 @@
 
 include(src/slides.md)
 
+<!--
+
+The slides and a transcript for this session are available online. We will
+display a QR encoded, shortened URL for the tarball at the end, so don't worry
+about writing down the URLs now.
+
+-->
+
 ## This Session
 
 * What it is:
 
-  * Primer on Monasca and its architecture
+  * Primer on Monasca
 
-  * Overview of Monasca repositories
+  * Overview of Monasca repositories and architecture
 
   * Introduction to the specifics of Monasca development
 
@@ -29,21 +37,90 @@ include(src/slides.md)
   * Refer to [Code & Documentation Contributor Guide](https://docs.openstack.org/contributors/code-and-documentation/index.html)
     for that.
 
+<!--
+
+## This Session
+
+Before we begin, a quick rundown on what we'll cover:
+
+We'll start out with a quick primer on Monasca, what it is and what it does.
+
+Next we'll take you on a guided tour of Monasca's architecture diagram. We'll
+intermingle this with information on which repository holds each component and
+some development hints.
+
+After that, end we will show you various ways to build a development
+environment and how to test your code.
+
+Finally we will show you how we organize and priorize development
+
+We do assume you already are familiar with the OpenStack development process
+and tools. If you are not, please read the 
+[Code & Documentation Contributor Guide](https://docs.openstack.org/contributors/code-and-documentation/index.html).
+
+-->
+
 ## What is Monasca?
 
-* Monitoring/Logging-as-a-Service
-  - highly scalable
-  - fault tolerant
-  - performant
-  - multi-tenant
+* Monitoring and Logging as a Service
+
+  * Highly scalable
+
+  * Fault tolerant
+
+  * High Performance
+
+  * Multi-tenant
+
+<!--
 
 ## What is Monasca?
+
+So, what is Monasca?
+
+In a nutshell, it's Monitoring and Logging as a Service.
+
+It's highly scalable: we took care to make all components clusterable and
+horizontally scalable, so that you can simply add more machines to resolve most
+bottlenecks.
+
+We also tried to make Monasca as fault tolerant as possible, so that no metrics or
+logs are lost, even if there are network outages.
+
+-->
+
+## What is Monasca? (cont.)
 
 * Features:
-  - metrics with dimensions (key/value pairs) as metadata
-  - real-time alerting
-  - pluggable notification engine
-  - flexible aggregation engine
+
+  * Metrics with dimensions (key/value pairs) as metadata
+
+  * Real-time alerting
+
+  * Pluggable notification engine
+
+  * Flexible aggregation engine
+
+<!--
+
+Let's take a look at what Monasca can do for you:
+
+We can gather all sorts of metrics and attach arbitrary dimensions to them. The
+most common one is of course the host name, but you could attach all sorts of
+other dimensions to identify a particular metric. For instance a VM's libvirt
+ID if you gather a particular metric for all VMs running on a host.
+
+We have an alerting framework where you can define all sorts of thresholds on
+arbitrary metrics.
+
+This ties into the notification engine which can send notifications on any or
+all channels it's got a plugin for.
+
+Last but not least we also have an aggregation engine for turning a flood of
+individual metrics into a synthetic compound metric. Anybody who has ever
+worked with Grafana's aggregation functions knows why *that* is useful...
+
+-->
 
 ## Sources of documentation
 
@@ -51,13 +128,42 @@ include(src/slides.md)
 * https://wiki.openstack.org/wiki/Monasca
 * http://monasca.io/
 
+<!--
+
+We have various places where we keep the documentation for Monasca:
+
+* https://docs.openstack.org/monasca-api
+
+* https://docs.openstack.org/monasca-log-api
+
+* https://wiki.openstack.org/wiki/Monasca
+
+* http://monasca.io/
+
+The most up-to-date is usually the stuff on
+[docs.openstack.org](https://docs.openstack.org) since that is generated
+directly from the `monasca-api` and `monasca-log-api` repositories.
+
+-->
+
 ## Main contributors
 
 * Fujitsu
+
 * HPE
+
 * OP5
+
 * StackHPC
+
 * SUSE
+
+<!--
+
+The main contributors to Monasca are Fujitsu, HPE, OP5, StackHPC and SUSE at
+the moment.
+
+-->
 
 # Monasca Metrics Architecture
 
@@ -66,8 +172,9 @@ include(src/slides.md)
 # Architecture and Development
 
 We will now give you a guided tour of Monasca's architecture mixed in
-with a quick run-down on each component. We will include extra information
-relevant to developers where applicable.
+with a quick run-down on each component.
+
+We will include extra information relevant to developers where applicable.
 
 -->
 
@@ -79,9 +186,10 @@ relevant to developers where applicable.
 
 ## Monasca Metrics API
 
-The Monasca metrics API is the central piece of Monasca. It receives metrics
-from agents, makes these metrics available to clients and is used for defining
-alarms and thresholds.
+The Monasca metrics API is the central piece of Monasca.
+
+It receives metrics from agents, makes these metrics available to clients and
+is used for defining alarms and thresholds.
 
 -->
 
@@ -91,10 +199,14 @@ alarms and thresholds.
 
 <!--
 
-Alarm definitions and thresholds and various other things are stored in a
-configuration database (usually MariaDB) which is accessed by various Monasca
-components. Among other things monasca-api contains the schema migrations for
-this database.
+Alarm definitions, thresholds and various other things are stored in a
+configuration database.
+
+This is a plain old SQL database, usually MariaDB since OpenStack has pretty
+much standardized on MariaDB. 
+
+Various Monasca components use it for things such as alarm state or user
+defined runtime state such as alarm definitions.
 
 -->
 
@@ -135,10 +247,12 @@ You will find the Metrics API in the
 The Metrics API receives metrics data from metrics agents and exposes the
 metrics stored in the time series database (more on that later).
 
-It is also the interface for modifying the configuration database. Which is to
-say, if you want to define alarms or set alarm thresholds the Metrics API is
-what you talk to, either directly through a Monasca client or indirectly
-through the Monasca UI which also talks to the Metrics API.
+It is also the interface for modifying the configuration database.
+
+Which is to say, if you want to define alarms or set alarm thresholds, the
+Metrics API is what you talk to. This happens either directly through a Monasca
+client or indirectly through the Monasca UI which uses the Monasca client in
+its backend.
 
 For developers there are a couple of interesting things in the `monasca-api`
 repository:
@@ -180,19 +294,27 @@ include(cmd/edit-revision.sh)
 ## Creating Database Migrations
 
 If you have made changes to the data model, you will also need to create a
-database migration. These database migrations allow operators to apply your
-changes to an existing database. We use [Alembic](http://alembic.zzzcomputing.com) for
-this. Run the following commands on your Devstack instance to generate a new
-skeleton migration:
+database migration.
+
+These database migrations allow operators to apply your changes to an existing
+database.
+
+We use [Alembic](http://alembic.zzzcomputing.com) for this.
+
+Run the following commands on your Devstack instance to generate a new skeleton
+migration:
 
 ```
 $ include(cmd/alembic-newrevision.sh)include(output/alembic-newrevision)
 ```
 
-`alembic` will output the newly created revision's file name. Add your data
-model changes to the `upgrade()` method in this file. Please also add code that
-removes your changes to the `downgrade()` method. Otherwise people will not be
-able to revert migrations later.
+`alembic` will output the newly created revision's file name.
+
+Add your data model changes to the `upgrade()` method in this file.
+
+Please also add code that removes your changes to the `downgrade()` method.
+
+Otherwise people will not be able to revert migrations later.
 
 -->
 
@@ -222,11 +344,9 @@ Another crucial component is the Monasca agent.
 
   * Collect metrics on monitored systems and forward them to `monasca-api`
 
-* Development Information
-
-  * Detailed documentation available in README
-
   * Easily extendible by adding custom plugins
+
+* Development Information
 
   * Check plugins (for collecting metrics) in `monasca_agent/collector/checks_d`
 
@@ -235,9 +355,11 @@ Another crucial component is the Monasca agent.
 
   * Please create both if you add a new check.
 
+  * Detailed documentation available in README
+
 <!--
 
-You'll find the Monasca agent in the
+You will find the Monasca agent in the
 [monasca-agent](https://github.com/openstack/monasca-agent) repository.
 
 The agent is the boots-on-the-ground component of Monasca: it runs on the
@@ -249,8 +371,13 @@ The most common is
 [Logstash](https://github.com/logstash-plugins/logstash-output-monasca_log_api)
 with the Monasca output plugin.
 
-The most important thing to bear in mind for `monasca-agent` developers is its
-plugin architecture. There are two sorts of plugins:
+Custom plugins for metrics specific to your deployment can also be easily
+integrated: there are magic directories where you can simply drop them. Since
+you are prospective Monasca developers we strongly suggest you contribute them
+upstream, though.
+
+Let's take a look at how plugins work (this is the same for both official and
+"magic directory" plugins). There are two types of plugins:
 
 1) Check plugins: You will find these in the `monasca_agent/collector/checks_d`
    directory. You create one of these if you want to add a new type of check to
@@ -261,11 +388,14 @@ plugin architecture. There are two sorts of plugins:
    `monasca-setup` which automatically detects things to be monitored and
    configures `monasca-agent` accordingly.
 
-If you add a new check plugin, please also try to add a detection plugin.
-Otherwise people will always have to configure your check manually.
+If you add a new check plugin to the official `monasca-agent` source tree,
+please also try to add a detection plugin.  Otherwise people will always have
+to configure your check manually.
 
-3) Custom plugins for metrics specific for your deployment can also be easily
-   integrated.
+Please refer to the documentation in the
+[monasca-agent](https://github.com/openstack/monasca-agent) repository for
+information on plugin development. We have detailed instructions for both
+official and "magic directory" plugins in there.
 
 -->
 
@@ -345,8 +475,9 @@ You will find the Horizon plugin for Monasca in the
 [monasca-ui](https://github.com/openstack/monasca-ui) repository.
 
 The Monasca Horizon plugin is fairly bare bones. Its chief purpose is
-providing a friendly interface for dealing with alarms and notifications: it
-allows the user to define these through a dialog based UI with sanity checks
+providing a friendly interface for dealing with alarms and notifications:
+
+it allows the user to define these through a dialog based UI with sanity checks
 and tooltips. It also visualizes alarms and notifications.
 
 Its secondary purpose is providing links to Grafana and Kibana dashboards which
@@ -484,8 +615,8 @@ engine. You will find this component in the
 
 This components listens in on metrics as they rush by on the message queue and
 checks whether they exceed any alarm thresholds. If they do, `monasca-thresh`
-publishes an alarm to the message queue (that message is then consumed by
-`monasca-notification`). At the same time the alarm will be recorded in the
+publishes an alarm to the message queue. That message is then consumed by
+`monasca-notification`. At the same time the alarm will be recorded in the
 Monasca database so it can be visualized in the Monasca UI.
 
 From the development side, `monasca-thresh` is a bit of an odd duck: it's one
@@ -581,8 +712,8 @@ planning on deprecating the Java one but for now contributions should still
 target both.
 
 As with other components, `monasca-persister` uses shared code from
-`monasca-common`, so you may have to submit changes to `monasca-common` as
-well if you contribute to `monasca-persister`.
+`monasca-common`, so you may have to submit changes to `monasca-common` as well
+if you contribute to `monasca-persister`.
 
 -->
 
@@ -633,15 +764,47 @@ to add support for them to Monasca. To do that we will usually have to modify
 
 # Monasca Logging Architecture
 
+<!--
+
+Metrics are but one side of the equation. Monasca also takes care of logs and
+we've got another architecture diagram for that. This one is a bit shorter
+though.
+
+-->
+
 include(src/logging.md)
+
+# Development Environment
+
+<!--
+
+# Development Environment
+
+Now that we've seen both the metrics and logging architecture, we'll take a
+look at the various ways to get a development environment going.
+
+-->
 
 ## Tutorial
 
 * Interactive Jupyter notebook
+
 * Demonstrates main Monasca functionalities
+
 * https://github.com/witekest/monasca-bootcamp/
 
-# Development environment
+<!--
+
+## Tutorial
+
+To give you a feel for how Monasca works from a user's perspective we have
+prepared an interactive Jupyter notebook. If you have never used Monasca
+before, you might want to give it a try. Otherwise you can dive right in
+and build a development environment. There are various ways to set one of these
+up:
+
+-->
+
 
 ## Devstack Setup for Monasca
 
@@ -654,24 +817,73 @@ include(src/logging.md)
 
       MONASCA_PERSISTER_IMPLEMENTATION_LANG=java
 
+<!--
+
+## Devstack Setup for Monasca
+
+If you already have your own way to deploy Devstack, these are the `local.conf`
+settings you will need to deploy it with Monasca. It's the same as for other
+OpenStack projects: just enable the `monasca-api` plugin.
+
+One setting of interest may be `MONASCA_PERSISTER_IMPLEMENTATION_LANG` and its
+analogues for other components. If you work on any components with dual
+implementations in Java and Python you may need these kinds of settings.
+
+-->
+
 ## Devstack Setup with Vagrant
 
       # cd monasca-api/devstack
       # vagrant up
 
+<!--
+
+## Devstack Setup with Vagrant
+
+If you do not have a Devstack setup, yet, you can build one with a simple
+`vagrant up` in the [monasca-api](https://github.com/openstack/monasca-api.git)
+repository's `devstack/` directory.
+
+-->
+
 ## monasca-docker
 
 * Containerized Monasca deployed with Docker Compose
 
-      # git clone [...]
+      # git clone https://github.com/monasca/monasca-docker
       # cd monasca-docker
       # docker-compose up
 
-* https://github.com/monasca/monasca-docker
+<!--
+
+## monasca-docker
+
+Last but not least you can deploy containerized Monasca with Docker Compose:
+
+      # git clone https://github.com/monasca/monasca-docker
+      # cd monasca-docker
+      # docker-compose up
+
+-->
 
 ## Running unit tests
 
+      # cd $REPO
+      # tox
       # tox -e py27,py35
+      # tox -e pep8
+
+<!--
+
+## Running unit tests
+
+Now for running tests...
+
+Unit tests are pretty straightforward, same as for other OpenStack projects.
+Just `cd` to the repository you modified and run tox. If you don't want to wait
+too long, specify only the tests you are interested.
+
+-->
 
 ## Running integration (tempest) tests in Devstack
 
@@ -705,9 +917,10 @@ include(src/logging.md)
 
 ## Why would you want to contribute?
 
-* modular
-* customisable
-* small and friendly community
+* "Our software comes with a `monasca-agent` / `monasca-notification' plugin
+* Modular
+* Customisable
+* Small and friendly community
 
 ## How to contribute?
 

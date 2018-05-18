@@ -232,10 +232,12 @@ defined runtime state such as alarm definitions.
   * API reference: https://github.com/openstack/monasca-api/blob/master/docs/monasca-api-spec.md
 
   * Contains data model for configuration database
-    (`monasca-api/monasca_api/common/repositories`)
+    (`monasca_api/common/repositories`)
 
   * Contains database migrations for configuration database (being added in
     OpenStack Rocky)
+
+  * Deprecated Java implementation: ignore when contributing
 
 <!--
 
@@ -267,11 +269,16 @@ repository:
 3) It contains the data model for the configuration database that is used by
    various Monasca services. Whenever you add or remove tables or columns you
    will need to edit the modules in the
-   `monasca-api/monasca_api/common/repositories` directory.
+   `monasca_api/common/repositories` directory.
 
 4) As of the OpenStack's Rocky release, `monasca-api` will contain the alembic
    migrations for changes to the configuration database. Let's look at that in
    some detail:
+
+There are two implementations of `monasca-api` in that repository: one in
+Python and one in Java. Nowadays everyone uses the Python implementation and we
+deprecated the Java one. So you won't need to target the Java implementation
+with your contributions.
 
 -->
 
@@ -344,7 +351,7 @@ Another crucial component is the Monasca agent.
 
   * Collect metrics on monitored systems and forward them to `monasca-api`
 
-  * Easily extendible by adding custom plugins
+  * Easily extensible by adding custom plugins
 
 * Development Information
 
@@ -372,9 +379,9 @@ The most common is
 with the Monasca output plugin.
 
 Custom plugins for metrics specific to your deployment can also be easily
-integrated: there are magic directories where you can simply drop them. Since
-you are prospective Monasca developers we strongly suggest you contribute them
-upstream, though.
+integrated: there are magic directories where an operator can simply drop them.
+Since you are prospective Monasca developers we strongly suggest you contribute
+your plugins upstream, though.
 
 Let's take a look at how plugins work (this is the same for both official and
 "magic directory" plugins). There are two types of plugins:
@@ -797,10 +804,11 @@ look at the various ways to get a development environment going.
 
 ## Tutorial
 
-To give you a feel for how Monasca works from a user's perspective we have
-prepared an interactive Jupyter notebook. If you have never used Monasca
-before, you might want to give it a try. Otherwise you can dive right in
-and build a development environment. There are various ways to set one of these
+To give people a feel for how Monasca works from a user's perspective we have
+prepared an interactive Jupyter notebook. While this is not aimed at developers,
+you might still want to give it a try if you haven't played with an active
+Monasca installation, yet. Otherwise you can dive right in and build a
+development environment. There are various ways to set one of these
 up:
 
 -->
@@ -964,7 +972,7 @@ Monasca community and our contribution process.
 
 ## Why Contribute?
 
-* "Our software comes with a `monasca-agent` / `monasca-notification' plugin
+* "We have a `monasca-agent`/`monasca-notification` plugin"
 
 * Modular
 

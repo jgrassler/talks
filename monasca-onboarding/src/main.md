@@ -887,20 +887,38 @@ too long, specify only the tests you are interested.
 
 ## Running integration (tempest) tests in Devstack
 
-* add *monasca-tempest-plugin* to `local.conf`
+* Add *monasca-tempest-plugin* to `local.conf`
 
       enable_plugin monasca-tempest-plugin \
         https://git.openstack.org/openstack/monasca-tempest-plugin
 
-* run tests
+* Run tests
 
       # cd /opt/stack/tempest
       # tempest run -r monasca_tempest_tests.tests.api
       # tempest run -r monasca_tempest_tests.tests.log_api
 
+<!--
+
+## Running integration (tempest) tests in Devstack
+
+Our tempest tests are also standard OpenStack fare:
+
+Before you deploy Devstack, enable the Monasca tempest plugin in your `local.conf`:
+
+    enable_plugin monasca-tempest-plugin https://git.openstack.org/openstack/monasca-tempest-plugin
+
+Once you've got your Devstack instance up and running you can run them in the usual manner:
+
+      # cd /opt/stack/tempest
+      # tempest run -r monasca_tempest_tests.tests.api
+      # tempest run -r monasca_tempest_tests.tests.log_api
+
+-->
+
 ## Running tempest tests with monasca-docker
 
-* add section to `docker-compose.yaml`:
+* Add section to `docker-compose.yaml`:
 
       tempest-tests:
         image: monasca/tempest-tests:latest
@@ -909,43 +927,172 @@ too long, specify only the tests you are interested.
           STAY_ALIVE_ON_FAILURE: "true"
           MONASCA_WAIT_FOR_API: "true"
 
-* run tests
+* Run tests
 
       # docker-compose up -d tempest-tests
 
+<!--
+
+## Running tempest tests with monasca-docker
+
+If you prefer Docker over DevStack, you can run tempest tests with
+`monasca-docker` as well.
+
+To that end you will need to add this little snippet to `docker-compose.yaml`
+
+      tempest-tests:
+        image: monasca/tempest-tests:latest
+        environment:
+          KEYSTONE_SERVER: "keystone"
+          STAY_ALIVE_ON_FAILURE: "true"
+          MONASCA_WAIT_FOR_API: "true"
+
+...and launch the tempest tests with the following command:
+
+      # docker-compose up -d tempest-tests
+
+-->
+
 # Become part of our community
 
-## Why would you want to contribute?
+<!--
+
+So much for the technical part. We'd like to conclude with a few notes on the
+Monasca community and our contribution process.
+
+-->
+
+## Why Contribute?
 
 * "Our software comes with a `monasca-agent` / `monasca-notification' plugin
+
 * Modular
+
 * Customisable
+
 * Small and friendly community
+
+<!--
+
+## Why Contribute?
+
+We don't know how many of you already have your own reasons to contribute to
+Monasca, but here's a few from our side:
+
+First of all you might be interested in contributing plugins to `monasca-agent`
+and/or `monasca-notification` if you are working on something that needs to be
+monitored or a communication tool that we do not have a notification plugin
+for.
+
+For especially this part of Monasca is very modular and customizable. Hurdles
+for entry are very low and the benefit will be mutual: you can claim Monasca
+support and we get a fresh plugin.
+
+And no matter the contribution you make, we are a small and friendly community.
+You can get things done fairly quickly in Monasca.
+
+-->
 
 ## How to contribute?
 
 * [Contributor Guide](https://docs.openstack.org/monasca-api/latest/contributor/index.html)
+
 * We use StoryBoard!
-  - bugs
-  - feature requests
+
+  * Bugs
+
+  * Feature requests
+
 * Specifications repository
   - [openstack/monasca-specs](http://specs.openstack.org/openstack/monasca-specs/)
+
+<!--
+
+## How to contribute?
+
+First of all, we do have a contributor guide with far more information than we
+could fit into this presentation, so be sure to check it out.
+
+One notable thing about the Monasca community is that we use Storyboard for
+bugs and feature requests. So please don't look for Monasca bugs on Launchpad
+or file them there. We may not even notice them if you do.
+
+You will find our specifications in the
+[openstack/monasca-specs](http://specs.openstack.org/openstack/monasca-specs/).
+If you think something is missing from Monasca, take a look at this repository
+- somebody might be working on it already.
+
+-->
 
 ## Work to do
 
 * Project priorities
+
   - http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html
+
 * Important Tasks and Reviews
+
   - https://storyboard.openstack.org/#!/board/60
+
+<!--
+
+## Work to do
+
+One thing you will also find in the specifications repository is our list of
+priorities for any given release, such as 
+[this one for Rocky](http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html).
+
+For an overview of what we are working on, check out our 
+[storyboard page](https://storyboard.openstack.org/#!/board/60).
+You will often find discussion and background on the stories we maintain there.
+
+-->
 
 ## Where can you help?
 
 * Reviews
-* Bugfixes
+
+* Bugfixes and Bug Reports
+
 * Community wide goals
+
 * Installers
+
 * Documentation
+
+<!--
+
+## Where can you help?
+
+As for things you can help with...the usual:
+
+* Like most Openstack projects we've got a packed review pipeline, so people
+  who take some of the pressure off us are always welcome.
+
+* Then there's always bugs to fix, of course. Bug reports are welcome, too.
+  There are a few `monasca-agent` plugins that don't see a lot of use but may
+  nonetheless be broken. If you happen to use one of these and discover bugs
+  please do report them.
+
+* Every OpenStack release brings one or two community goals, such as the
+  implementation of Oslo's policy-in-code for Queens. Implementing them is
+  usually not a glamorous job but it needs to be done and often it involves a
+  lot of refactoring. So we greatly appreciate help with that.
+
+* One sore point with Monasca is installation. You have seen how many moving
+  parts Monasca has - setting it up is a major undertaking. So if you have
+  Ansible, Chef, Docker, Helm or Kubernetes experience, by all means lets talk.
+  More ways to set up Monasca are always a good thing.
+
+* Documentation is always a sore point. We've got a few very good pieces of
+  documentation, such as the plugin development guide for `monasca-agent`, but
+  we've also got some parts of Monasca where we have little to no
+  documentation. If you happen to discover how one of these undocumented
+  subsystems works the hard way, please consider writing down what you learned.
+  We'd be happy to integrate that into our official documentation!
+
+-->
 
 # Questions?
 
-# Thank You
+# Thank You!

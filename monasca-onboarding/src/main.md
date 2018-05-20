@@ -49,13 +49,13 @@ Next we'll take you on a guided tour of Monasca's architecture diagram. We'll
 intermingle this with information on which repository holds each component and
 some development hints.
 
-After that, end we will show you various ways to build a development
+After that we will show you various ways to build a development
 environment and how to test your code.
 
-Finally we will show you how we organize and priorize development
+Finally we will show you how we organize the development and where you can find the topics to help us on.
 
 We do assume you already are familiar with the OpenStack development process
-and tools. If you are not, please read the 
+and tools. If you are not, please read the
 [Code & Documentation Contributor Guide](https://docs.openstack.org/contributors/code-and-documentation/index.html).
 
 -->
@@ -80,12 +80,17 @@ So, what is Monasca?
 
 In a nutshell, it's Monitoring and Logging as a Service.
 
-It's highly scalable: we took care to make all components clusterable and
-horizontally scalable, so that you can simply add more machines to resolve most
-bottlenecks.
+It's highly scalable: Monasca is build using micro-services architecture
+where each component can be clustered. In case of a bottleneck more machines can
+be added to resolve the problems.
 
-We also tried to make Monasca as fault tolerant as possible, so that no metrics or
-logs are lost, even if there are network outages.
+The services communicate using Apache Kafka which is ridiculously fast and
+adds fault tolerance to the system. Even if some of components temporarily cannot
+consume the messages they won't get lost, but will be hold in that time in the message queue.
+
+Last but not least, Monasca is multi-tenant. It stores metrics per project.
+The users authenticate with Keystone and get the measurements only for their project.
+It allows e.g. exposing application metrics running on customer instances.
 
 -->
 
@@ -107,14 +112,15 @@ Let's take a look at what Monasca can do for you:
 
 We can gather all sorts of metrics and attach arbitrary dimensions to them. The
 most common one is of course the host name, but you could attach all sorts of
-other dimensions to identify a particular metric. For instance a VM's libvirt
+other dimensions to identify a particular metric. For instance a VM's resource
 ID if you gather a particular metric for all VMs running on a host.
 
-We have an alerting framework where you can define all sorts of thresholds on
-arbitrary metrics.
+We have a real-time alerting engine which evaluates the measurements consumed
+from the message queue before they get persisted.
+This ensures very short latency for notifications.
 
-This ties into the notification engine which can send notifications on any or
-all channels it's got a plugin for.
+The notification engine is pluggable and supports several notification channels,
+like email, webhook, Slack, Jira, Hipchat, etc.
 
 Last but not least we also have an aggregation engine for turning a flood of
 individual metrics into a synthetic compound metric. Anybody who has ever
@@ -203,7 +209,7 @@ Alarm definitions, thresholds and various other things are stored in a
 configuration database.
 
 This is a plain old SQL database, usually MariaDB since OpenStack has pretty
-much standardized on MariaDB. 
+much standardized on MariaDB.
 
 Various Monasca components use it for things such as alarm state or user
 defined runtime state such as alarm definitions.
@@ -781,17 +787,6 @@ though.
 
 include(src/logging.md)
 
-# Development Environment
-
-<!--
-
-# Development Environment
-
-Now that we've seen both the metrics and logging architecture, we'll take a
-look at the various ways to get a development environment going.
-
--->
-
 ## Tutorial
 
 * Interactive Jupyter notebook
@@ -805,11 +800,24 @@ look at the various ways to get a development environment going.
 ## Tutorial
 
 To give people a feel for how Monasca works from a user's perspective we have
-prepared an interactive Jupyter notebook. While this is not aimed at developers,
+prepared an interactive Jupyter notebook.
+While this is not aimed at developers,
 you might still want to give it a try if you haven't played with an active
-Monasca installation, yet. Otherwise you can dive right in and build a
-development environment. There are various ways to set one of these
-up:
+Monasca installation, yet.
+It demonstrates the most important Monasca functionalities using
+hands-on examples and exercises.
+The material was prepared for the hands-on sessions on previous Summits.
+
+-->
+
+# Development Environment
+
+<!--
+
+# Development Environment
+
+Now that we've seen both the metrics and logging architecture, we'll take a
+look at the various ways to get a development environment going.
 
 -->
 
@@ -871,6 +879,9 @@ Last but not least you can deploy containerized Monasca with Docker Compose:
       # git clone https://github.com/monasca/monasca-docker
       # cd monasca-docker
       # docker-compose up
+
+Working with Docker containers may significantly speed up your Development
+workflow.
 
 -->
 
@@ -972,11 +983,11 @@ Monasca community and our contribution process.
 
 ## Why Contribute?
 
-* "We have a `monasca-agent`/`monasca-notification` plugin"
+* Pluggable
 
 * Modular
 
-* Customisable
+* Customizable
 
 * Small and friendly community
 
@@ -1022,8 +1033,7 @@ First of all, we do have a contributor guide with far more information than we
 could fit into this presentation, so be sure to check it out.
 
 One notable thing about the Monasca community is that we use Storyboard for
-bugs and feature requests. So please don't look for Monasca bugs on Launchpad
-or file them there. We may not even notice them if you do.
+bugs and feature requests. So please don't look for Monasca bugs on Launchpad.
 
 You will find our specifications in the
 [openstack/monasca-specs](http://specs.openstack.org/openstack/monasca-specs/).
@@ -1047,10 +1057,10 @@ If you think something is missing from Monasca, take a look at this repository
 ## Work to do
 
 One thing you will also find in the specifications repository is our list of
-priorities for any given release, such as 
+priorities for any given release, such as
 [this one for Rocky](http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html).
 
-For an overview of what we are working on, check out our 
+For an overview of what we are working on, check out our
 [storyboard page](https://storyboard.openstack.org/#!/board/60).
 You will often find discussion and background on the stories we maintain there.
 
@@ -1061,6 +1071,7 @@ You will often find discussion and background on the stories we maintain there.
 * Reviews
 
 * Bugfixes and Bug Reports
+  https://storyboard.openstack.org/#!/worklist/213
 
 * Community wide goals
 

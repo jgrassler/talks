@@ -60,8 +60,9 @@ If you modify `monasca-log-api`, you may have to use `monasca-common` as well.
 On the input side we have agents again, which send the log messages to the API.
 
 Unlike the metric agent, these are not part of Monasca, though. You can use
-either [logstash](https://www.elastic.co/de/products/logstash) or
-[beaver](https://github.com/python-beaver) with a Monasca output plugin.
+either [logstash](https://www.elastic.co/de/products/logstash),
+[beaver](https://github.com/python-beaver) or
+[fluentd](https://www.fluentd.org/) with Monasca output plugin.
 
 We currently recommend logstash because the Monasca plugin for Beaver has not
 been merged upstream and Beaver appears to be unmaintained.
@@ -91,7 +92,7 @@ for various purposes.
 <!--
 
 The first of these is the log metrics service. It processes the log messages in
-the message queue and counts the occurences of log levels, such as `INFO`,
+the message queue and counts the occurrences of log levels, such as `INFO`,
 `WARN` or `DEBUG`. These statistics are then published to Kafka as metrics for
 consumption on the metrics side of Monasca.
 

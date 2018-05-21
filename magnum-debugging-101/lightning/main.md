@@ -1,7 +1,3 @@
-## User...
-
-include(common/arch/arch0.md)
-
 <!--
 
 # User...
@@ -149,7 +145,7 @@ So, back to magnum-conductor. Let's assume it gets the message now.
 
 * Cluster status
 
-  * `include(cmd/cluster-show.sh)`
+  * Poll API: `include(cmd/cluster-show.sh)`
 
   * A `status` value of `CREATE_FAILED` indicates creation failure
 
@@ -248,8 +244,7 @@ and add all the other ingredients required for our cluster...
 ...presuming it can. 
 
 For it may encounter resource exhaustion problems such as the ever popular `No
-valid host was found` or the equally popular "Oops, our admin forgot increasing
-the default quota of 10 volumes!".
+valid host was found` or too tight a quota somewhere.
 
 -->
 

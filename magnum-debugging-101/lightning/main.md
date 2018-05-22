@@ -109,7 +109,7 @@ message to its backend service, `magnum-conductor`, which does the actual work.
 * After a minute you may get
 
 ```
-include(output/conductor-down) 
+include(output/conductor-down)
 ```
 
 * Diagnosis:
@@ -241,7 +241,7 @@ and add all the other ingredients required for our cluster...
 
 ## Early `CREATE_FAILED` from Heat
 
-...presuming it can. 
+...presuming it can.
 
 For it may encounter resource exhaustion problems such as the ever popular `No
 valid host was found` or too tight a quota somewhere.
@@ -365,7 +365,7 @@ column tells us whether the problematic node is a master or minion node.
 <!--
 
 You ssh to all nodes of the type that failed (be that master or minion) and
-examine `/var/log/cloud-init-output.log` for errors. 
+examine `/var/log/cloud-init-output.log` for errors.
 
 Once you've got a log with errors you've found the broken node.
 
@@ -427,9 +427,9 @@ There are three basic categories of wait condition timeout:
 
 3. Last but not least, the default timeout of 60 minutes for wait conditions may be
    too low for very large clusters on very busy clouds.
-   
+
    You'll see successful user data scripts across the board in that case.
-   
+
    Just recreate the cluster with a bigger timeout to fix the problem.
 
 -->
@@ -477,9 +477,9 @@ And now the user comes along and starts talking to the Kubernetes API...
 
   * `kubectl get nodes`
 
-* API Server down or minions unreachable
+* Troubleshooting:
 
-  * Configuration issue: check master and minion config files in `/etc/kubernetes/`
+    * Configuration issue: check master and minion config files in `/etc/kubernetes/`
 
 * Pods deployment stuck in `ContainerCreating` state
 
@@ -521,25 +521,24 @@ The pod status is Pending while the Docker image is being downloaded, so if
 the status does not change for a long time, log into the minion node and check
 for Cluster internet access.
 
-Note: This is specific to the default network driver flannel.
 There are different levels at which the network could be broken leading to
-connectivity issues. Firstly, make sure that neutron is working properly and
-that all the nodes in the cluster are able to ping each other. The networking
-between pods is different and separate from the neutron network set up for the
-cluster. Kubernetes presents a flat network space for the pods and services and
-uses different network drivers to provide this network model. Start by checking
-the interfaces and the docker deamon. Then check flannel which is the default
-network driver for magnum which provides a flat network space for the
-containers in a cluster. Therefore, if Flannel fails, some containers will not
-be able to access services from other containers in the cluster. Lastly, the
-containers created by Kubernetes for pods will be on the same IP subnet as the
+connectivity issues.
+
+Firstly, make sure that neutron is working properly and that all the nodes in
+the cluster are able to ping each other.
+
+Kubernetes presents a flat network space for the pods and services and uses different
+network drivers to provide this network model. This is specific to the default network
+driver flannel.
+
+Check the interfaces and the docker deamon. Then check flannel. If Flannel fails,
+some containers will not be able to access services from other containers in the cluster.
+
+Lastly, the containers created by Kubernetes will be on the same IP subnet as the
 containers created directly in Docker and so they will have the same connectivity.
 However, the pods still may not be able to reach each other because normally they
 connect through some Kubernetes services rather than directly. The services are
 supported by the kube-proxy and rules inserted into the iptables, therefore their
-networking paths have some extra hops and there may be problems here.
+networking paths have some extra hops and there may be problems there.
 
 -->
-
-
-

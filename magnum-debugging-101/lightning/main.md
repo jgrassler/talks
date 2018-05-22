@@ -470,22 +470,26 @@ And now the user comes along and starts talking to the Kubernetes API.
 
 * Troubleshooting:
 
-  * Check `kube-controller`, `kube-apiserver` and `etcd` service on master node.
+    * Check `kube-controller`, `kube-apiserver` and `etcd` service on master node.
 
- * Check if `cluster_user_trust` is set in the magnum config file
+    * Check if `cluster_user_trust` is set in the magnum config file
 
 * Pods stuck in status Pending
 
- * Check internet access on minion nodes.
+* Troubleshooting:
+
+    * Check internet access on minion nodes.
 
 * Pods and services deployed, application unreachable
 
-  * Check if Neutron is working properly by pinging between the minion nodes.
-  * Check if `docker0` and `flannel0` interfaces are configured correctly.
-  * Check if node IPs are in the correct flannel subnet. If not docker daemon
+* Troubleshooting:
+
+    * Check if Neutron is working properly by pinging between the minion nodes.
+    * Check if `docker0` and `flannel0` interfaces are configured correctly.
+    * Check if node IPs are in the correct flannel subnet. If not docker daemon
     is not configured correctly with parameter `--bip`.
-  * Check if flannel is running properly.
-  * Check `kube_proxy` to check if the problem is only on a kubernetes
+    * Check if flannel is running properly.
+    * Check `kube_proxy` to check if the problem is only on a kubernetes
     level.
 
 <!--

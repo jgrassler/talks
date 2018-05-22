@@ -434,38 +434,23 @@ There are three basic categories of wait condition timeout:
 
 -->
 
-include(common/arch/arch14.md)
-
-<!--
-
-# Kubernetes orchestrates Docker
-
-# cloud-init configures Kubernetes
-
-Let's assume all cloud-init scripts run fine. Then `cloud-init` will have
-configured Kubernetes now...
-
-![Kubernetes orchestrates Docker](img/magnum_architecture_14.PNG)
-
--->
-
-include(common/arch/arch15.md)
-
-<!--
-
-...and the cluster is ready to receive containers.
-
-![Workload in Docker Containers](img/magnum_architecture_15.PNG)
-
--->
 
 include(common/arch/arch16.md)
 
 <!--
 
-And now the user comes along and starts talking to the Kubernetes API...
+# Kubernetes Credentials from Magnum API
+
+Let's assume all cloud-init scripts run fine. Then `cloud-init` will have
+configured Kubernetes now and the cluster is ready to receive containers.
+
+And now the user comes along and starts talking to the Kubernetes API.
 
 ![Kubernetes Credentials from Magnum API](img/magnum_architecture_16.PNG)
+
+-->
+
+
 
 -->
 

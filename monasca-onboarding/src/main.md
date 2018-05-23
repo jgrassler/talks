@@ -510,6 +510,11 @@ are used to visualize metrics and logs, respectively.
 
 ![Horizon Plugin](img/architecture5.Png)
 
+## Message Queue
+
+![Message Queue](img/architecture6.Png)
+
+
 ## Message Queue: Interconnects Monasca Components
 
 * Repository
@@ -521,13 +526,6 @@ are used to visualize metrics and logs, respectively.
   * Shuttle metrics, notifications and log entries back and forth between
     components
 
-<!--
-
--->
-
-## Message Queue
-
-![Message Queue](img/architecture6.Png)
 
 <!--
 

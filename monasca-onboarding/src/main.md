@@ -12,6 +12,8 @@ include(src/slides.md)
 
 <!--
 
+## Slides and Transcript
+
 The slides and a transcript for this session are available online. We will
 display a QR encoded, shortened URL for the tarball at the end, so don't worry
 about writing down the URLs now.
@@ -128,13 +130,15 @@ worked with Grafana's aggregation functions knows why *that* is useful...
 
 -->
 
-## Sources of documentation
+## Sources of Documentation
 
 * https://docs.openstack.org/monasca-api
 * https://wiki.openstack.org/wiki/Monasca
 * http://monasca.io/
 
 <!--
+
+## Sources of Documentation
 
 We have various places where we keep the documentation for Monasca:
 
@@ -152,7 +156,7 @@ directly from the `monasca-api` and `monasca-log-api` repositories.
 
 -->
 
-## Main contributors
+## Main Contributors
 
 * Fujitsu
 
@@ -166,12 +170,14 @@ directly from the `monasca-api` and `monasca-log-api` repositories.
 
 <!--
 
+## Main Contributors
+
 The main contributors to Monasca are Fujitsu, HPE, OP5, StackHPC and SUSE at
 the moment.
 
 -->
 
-# Monasca Metrics Architecture
+# Architecture and Development
 
 <!--
 
@@ -246,8 +252,6 @@ defined runtime state such as alarm definitions.
   * Deprecated Java implementation: ignore when contributing
 
 <!--
-
-## Metrics API (`monasca-api`)
 
 You will find the Metrics API in the
 [monasca-api](https://github.com/openstack/monasca-api) repository.
@@ -440,7 +444,7 @@ official and "magic directory" plugins in there.
 
 <!--
 
-## Monasca client
+## Monasca Client
 
 You will find the Monasca client in the
 [python-monascaclient](https://github.com/openstack/python-monascaclient) repository.

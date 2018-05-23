@@ -45,16 +45,17 @@ about writing down the URLs now.
 
 Before we begin, a quick rundown on what we'll cover:
 
-We'll start out with a quick primer on Monasca, what it is and what it does.
+We'll start out with a quick primer on Monasca, what it is, and what it does.
 
 Next we'll take you on a guided tour of Monasca's architecture diagram. We'll
 intermingle this with information on which repository holds each component and
 some development hints.
 
-After that we will show you various ways to build a development
-environment and how to test your code.
+After that we will show you various ways to build a development environment and
+how to test your code.
 
-Finally we will show you how we organize the development and where you can find the topics to help us on.
+Finally we will show you how we organize the development and where you can find
+the topics to help us on.
 
 We do assume you already are familiar with the OpenStack development process
 and tools. If you are not, please read the
@@ -82,13 +83,14 @@ So, what is Monasca?
 
 In a nutshell, it's Monitoring and Logging as a Service.
 
-It's highly scalable: Monasca is build using micro-services architecture
+It's highly scalable: Monasca is built using micro-services architecture
 where each component can be clustered. In case of a bottleneck more machines can
 be added to resolve the problems.
 
 The services communicate using Apache Kafka which is ridiculously fast and
-adds fault tolerance to the system. Even if some of components temporarily cannot
-consume the messages they won't get lost, but will be hold in that time in the message queue.
+adds fault tolerance to the system. Even if some of the components temporarily
+cannot consume the messages they won't get lost, but will be held in the
+message queue until they can be consumed.
 
 Last but not least, Monasca is multi-tenant. It stores metrics per project.
 The users authenticate with Keystone and get the measurements only for their project.
@@ -118,8 +120,8 @@ other dimensions to identify a particular metric. For instance a VM's resource
 ID if you gather a particular metric for all VMs running on a host.
 
 We have a real-time alerting engine which evaluates the measurements consumed
-from the message queue before they get persisted.
-This ensures very short latency for notifications.
+from the message queue before they get persisted. This ensures very short
+latency for notifications.
 
 The notification engine is pluggable and supports several notification channels,
 like email, webhook, Slack, Jira, Hipchat, etc.
@@ -278,16 +280,16 @@ repository:
 
 3) It contains the data model for the configuration database that is used by
    various Monasca services. Whenever you add or remove tables or columns you
-   will need to edit the modules in the
-   `monasca_api/common/repositories` directory.
+   will need to edit the modules in the `monasca_api/common/repositories`
+   directory.
 
-4) As of the OpenStack's Rocky release, `monasca-api` will contain the alembic
-   migrations for changes to the configuration database. Let's look at that in
-   some detail:
+4) As of OpenStack's Rocky release, `monasca-api` will contain the Alembic
+   migrations for changes to the configuration database. We will look at that
+   in detail on the next slide.
 
 There are two implementations of `monasca-api` in that repository: one in
-Python and one in Java. Nowadays everyone uses the Python implementation and we
-deprecated the Java one. So you won't need to target the Java implementation
+Python and one in Java. Nowadays everybody uses the Python implementation and
+we deprecated the Java one. So you won't need to target the Java implementation
 with your contributions.
 
 -->
@@ -386,7 +388,9 @@ to monasca-api.
 Please note that it only collects metrics. For logs you need a separate agent.
 The most common is
 [Logstash](https://github.com/logstash-plugins/logstash-output-monasca_log_api)
-with the Monasca output plugin.
+with the Monasca output plugin, but there are Monasca output plugins for
+[fluentd](https://www.fluentd.org/) and [beaver](https://github.com/python-beaver)
+as well.
 
 Custom plugins for metrics specific to your deployment can also be easily
 integrated: there are magic directories where an operator can simply drop them.
@@ -630,14 +634,14 @@ The other side of notification is taken care of by the Monasca Threshold
 engine. You will find this component in the
 [monasca-thresh](https://github.com/openstack/monasca-thresh) repository.
 
-This components listens in on metrics as they rush by on the message queue and
+This component listens in on metrics as they rush by on the message queue and
 checks whether they exceed any alarm thresholds. If they do, `monasca-thresh`
 publishes an alarm to the message queue. That message is then consumed by
 `monasca-notification`. At the same time the alarm will be recorded in the
 Monasca database so it can be visualized in the Monasca UI.
 
-From the development side, `monasca-thresh` is a bit of an odd duck: it's one
-of the services that is entirely implemented in Java with no Python
+From a developer's point of view, `monasca-thresh` is a bit of an odd duck:
+it's one of the services that is entirely implemented in Java with no Python
 implementation existing at the moment.
 
 `monasca-thresh` uses some shared code from the Java part of the
@@ -645,7 +649,7 @@ implementation existing at the moment.
 you contribute code to `monasca-thresh`.
 
 Last but not least, `monasca-thresh` does not do the heavy lifting all by
-itself. Instead it uses Apache Storm to process metrics.
+itself. Instead, it uses Apache Storm to process metrics.
 
 -->
 
@@ -676,8 +680,9 @@ You will find it in the
 [monasca-transform](https://github.com/openstack/monasca-transform) repository.
 
 This component takes more of an active role: it consumes metrics the Metrics
-API publishes on the message queue and republishes the metrics themselves and
-the resulting after performing various transformations on them.
+API publishes on the message queue and republishes the metrics themselves plus
+the synthetic metrics that result from performing various transformations on
+them.
 
 The most common transformation is aggregating individual metrics into
 bigger-picture metrics (e.g. summing up the `m1.xlarge` VMs on each compute
@@ -716,17 +721,17 @@ node and publishing that sum as a synthetic metric for each compute node).
 
 ## Persister (`monasca-persister`)
 
-`monasca-persister` is the key element in the metrics processing pipeline.
-You will find it in the [monasca-persister](https://github.com/openstack/monasca-persister) repository.
+`monasca-persister` is the key element in the metrics processing pipeline. You
+will find it in the [monasca-persister](https://github.com/openstack/monasca-persister) repository.
 
 When all is said and done, its job is very simple:
 
 It consumes the metrics `monasca-api` and `monasca-transformer` publish to the
 message queue and stores them in the time series database.
 
-There are two `monasca-persister` implementations: a Python and a Java. We are
-planning on deprecating the Java one but for now contributions should still
-target both.
+There are two `monasca-persister` implementations: one in Python and one in
+Java. We are planning on deprecating the Java implementation, but for now
+contributions should still target both.
 
 As with other components, `monasca-persister` uses shared code from
 `monasca-common`, so you may have to submit changes to `monasca-common` as well
@@ -783,7 +788,7 @@ to add support for them to Monasca. To do that we will usually have to modify
 
 <!--
 
-Metrics are but one side of the equation. Monasca also takes care of logs and
+Metrics are but one side of the equation. Monasca also takes care of logs, and
 we've got another architecture diagram for that. This one is a bit shorter
 though.
 
@@ -805,12 +810,13 @@ include(src/logging.md)
 
 To give people a feel for how Monasca works from a user's perspective we have
 prepared an interactive Jupyter notebook.
-While this is not aimed at developers,
-you might still want to give it a try if you haven't played with an active
-Monasca installation, yet.
-It demonstrates the most important Monasca functionalities using
-hands-on examples and exercises.
-The material was prepared for the hands-on sessions on previous Summits.
+
+While this is not aimed at developers, you might still want to give it a try if
+you haven't played with an active Monasca installation, yet.
+
+It demonstrates the most important Monasca functionalities using hands-on
+examples and exercises.  The material was prepared for the hands-on sessions on
+previous Summits.
 
 -->
 
@@ -884,7 +890,7 @@ Last but not least you can deploy containerized Monasca with Docker Compose:
       # cd monasca-docker
       # docker-compose up
 
-Working with Docker containers may significantly speed up your Development
+Working with Docker containers may significantly speed up your development
 workflow.
 
 -->
@@ -903,12 +909,12 @@ workflow.
 Now for running tests...
 
 Unit tests are pretty straightforward, same as for other OpenStack projects.
-Just `cd` to the repository you modified and run tox. If you don't want to wait
-too long, specify only the tests you are interested.
+Just `cd` to the repository you modified and run `tox`. If you don't want to
+wait too long, specify only the tests you are interested in.
 
 -->
 
-## Running integration (tempest) tests in Devstack
+## Running Integration (Tempest) Tests in Devstack
 
 * Add *monasca-tempest-plugin* to `local.conf`
 
@@ -923,9 +929,9 @@ too long, specify only the tests you are interested.
 
 <!--
 
-## Running integration (tempest) tests in Devstack
+## Running Integration (Tempest) Tests in Devstack
 
-Our tempest tests are also standard OpenStack fare:
+Our Tempest tests are also standard OpenStack fare:
 
 Before you deploy Devstack, enable the Monasca tempest plugin in your `local.conf`:
 
@@ -939,7 +945,7 @@ Once you've got your Devstack instance up and running you can run them in the us
 
 -->
 
-## Running tempest tests with monasca-docker
+## Running Tempest Tests with `monasca-docker`
 
 * Add section to `docker-compose.yaml`:
 
@@ -956,7 +962,7 @@ Once you've got your Devstack instance up and running you can run them in the us
 
 <!--
 
-## Running tempest tests with monasca-docker
+## Running Tempest Tests with `monasca-docker`
 
 If you prefer Docker over DevStack, you can run tempest tests with
 `monasca-docker` as well.
@@ -1040,7 +1046,9 @@ One notable thing about the Monasca community is that we use Storyboard for
 bugs and feature requests. So please don't look for Monasca bugs on Launchpad.
 
 You will find our specifications in the
-[openstack/monasca-specs](http://specs.openstack.org/openstack/monasca-specs/).
+[openstack/monasca-specs](http://specs.openstack.org/openstack/monasca-specs/)
+repository.
+
 If you think something is missing from Monasca, take a look at this repository
 - somebody might be working on it already.
 
@@ -1061,8 +1069,7 @@ If you think something is missing from Monasca, take a look at this repository
 ## Work to do
 
 One thing you will also find in the specifications repository is our list of
-priorities for any given release, such as
-[this one for Rocky](http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html).
+priorities for any given release, such as [this one for Rocky](http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html).
 
 For an overview of what we are working on, check out our
 [storyboard page](https://storyboard.openstack.org/#!/board/60).
@@ -1099,7 +1106,7 @@ As for things you can help with...the usual:
 
 * Every OpenStack release brings one or two community goals, such as the
   implementation of Oslo's policy-in-code for Queens. Implementing them is
-  usually not a glamorous job but it needs to be done and often it involves a
+  usually not a glamorous job but it needs to be done, and often it involves a
   lot of refactoring. So we greatly appreciate help with that.
 
 * One sore point with Monasca is installation. You have seen how many moving
@@ -1107,7 +1114,7 @@ As for things you can help with...the usual:
   Ansible, Chef, Docker, Helm or Kubernetes experience, by all means lets talk.
   More ways to set up Monasca are always a good thing.
 
-* Documentation is always a sore point. We've got a few very good pieces of
+* Documentation is another a sore point. We've got a few very good pieces of
   documentation, such as the plugin development guide for `monasca-agent`, but
   we've also got some parts of Monasca where we have little to no
   documentation. If you happen to discover how one of these undocumented

@@ -1,6 +1,6 @@
 * Compiled slides (recommended)
 
-  * [https://btw23.de/johannes/talks/monasca-onboarding.tar.bz2](https://btw23.de/johannes/talks/monasca-onboarding.tar.bz2)
+  * [http://btw23.de/johannes/talks/monasca-onboarding.tar.bz2](http://btw23.de/johannes/talks/monasca-onboarding.tar.bz2)
 
 * [odpdown](https://github.com/thorstenb/odpdown) sources
 

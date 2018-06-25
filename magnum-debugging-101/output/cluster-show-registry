@@ -1,0 +1,23 @@
+root@d52-54-77-77-01-01:~ # magnum cluster-show k8s_cluster
++---------------------+--------------------------------------------------------------------------------------+
+| Property            | Value                                                                                |
++---------------------+--------------------------------------------------------------------------------------+
+| status              | CREATE_FAILED                                                                        |
+| cluster_template_id | 9f332361-c740-4896-b88a-7c7b4e4c2254                                                 |
+| uuid                | 2b9ee05b-6c43-4de8-9eb7-a42a91757008                                                 |
+| stack_id            | -                                                                                    |
+| status_reason       | This cluster can only be created with trust/cluster_user_trust = True in magnum.conf |
+| created_at          | 2017-05-16T09:59:02+00:00                                                            |
+| name                | k8s_cluster                                                                          |
+| updated_at          | -                                                                                    |
+| discovery_url       | https://discovery.etcd.io/6938b73e8773d808d08aebf6821c1c08                           |
+| faults              | {}                                                                                   |
+| api_address         | -                                                                                    |
+| coe_version         | -                                                                                    |
+| master_addresses    | []                                                                                   |
+| create_timeout      | 60                                                                                   |
+| node_addresses      | []                                                                                   |
+| master_count        | 1                                                                                    |
+| container_version   | -                                                                                    |
+| node_count          | 1                                                                                    |
++---------------------+--------------------------------------------------------------------------------------+

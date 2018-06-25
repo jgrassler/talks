@@ -1,0 +1,13 @@
+kube-master0:~ # tail -n 12 /var/log/cloud-init-output.log 
+activating kube-controller-manager service
+Created symlink from /etc/systemd/system/multi-user.target.wants/kube-controller-manager.service to /usr/lib/systemd/system/kube-controller-manager.service.
+starting kube-controller-manager services
+#!/bin/bash -v
+curl -i -X POST -H 'X-Auth-Token: 100809c0e3194707b4b65419b1056a7e' -H 'Content-Type: application/json' -H 'Accept: application/json' http://192.168.232.2:8004/v1/7d23de1316714f1783f92242e4bb02ef/stacks/k8s_cluster-jf3atei2jlpu-kube_masters-gypg2jphpe3m-0-gqt6az75rjgs/1606c420-e24c-4376-a177-cf00838a081c/resources/master_wait_handle/signal --data-binary '{"status": "SUCCESS"}'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                   Dload  Upload   Total   Spent    Left  Speed
+                                     0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0curl: (7) Failed to connect to 192.168.232.2 port 8004: Connection refused
+                                     2017-05-16 08:59:47,843 - util.py[WARNING]: Failed running /var/lib/cloud/instance/scripts/part-007 [7]
+                                     2017-05-16 08:59:47,897 - cc_scripts_user.py[WARNING]: Failed to run module scripts-user (scripts in /var/lib/cloud/instance/scripts)
+                                     2017-05-16 08:59:47,913 - util.py[WARNING]: Running module scripts-user (<module 'cloudinit.config.cc_scripts_user' from '/usr/lib/python2.7/site-packages/cloudinit/config/cc_scripts_user.pyc'>) failed
+                                     Cloud-init v. 0.7.8 finished at Tue, 16 May 2017 08:59:48 +0000. Datasource DataSourceConfigDrive [net,ver=2][source=/dev/sr0].  Up 175.30 seconds

@@ -1,0 +1,8 @@
+root@d52-54-77-77-01-01:~ # openstack stack output show $nested kube_master_external_ip
++--------------+-------------------------+
+| Field        | Value                   |
++--------------+-------------------------+
+| description  | No description given    |
+| output_key   | kube_master_external_ip |
+| output_value | 192.168.232.129         |
++--------------+-------------------------+

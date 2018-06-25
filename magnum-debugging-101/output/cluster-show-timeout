@@ -1,0 +1,26 @@
+root@d52-54-77-77-01-01:~ # magnum cluster-show k8s_cluster
++---------------------+----------------------------------------------------------------------------------------------------------------------+
+| Property            | Value                                                                                                                |
++---------------------+----------------------------------------------------------------------------------------------------------------------+
+| status              | CREATE_FAILED                                                                                                        |
+| cluster_template_id | ee9d182c-6987-46f6-8e6a-c873e2b10f6c                                                                                 |
+| uuid                | bab88e18-a0dc-4db0-9be2-c1a9bf23104a                                                                                 |
+| stack_id            | f59404cd-14c9-4b62-b62b-cb0beb057514                                                                                 |
+| status_reason       | Resource CREATE failed: WaitConditionTimeout: resources.kube_masters.resources[0].resources.master_wait_condition:   |
+|                     | 0 of 1 received                                                                                                      |
+| created_at          | 2017-05-16T08:54:39+00:00                                                                                            |
+| name                | k8s_cluster                                                                                                          |
+| updated_at          | 2017-05-16T09:06:55+00:00                                                                                            |
+| discovery_url       | https://discovery.etcd.io/e025ff3b532c3f5845824b36671faca0                                                           |
+| faults              | {'0': 'WaitConditionTimeout: resources[0].resources.master_wait_condition: 0 of 1 received', 'kube_masters':         |
+|                     | 'WaitConditionTimeout: resources.kube_masters.resources[0].resources.master_wait_condition: 0 of 1 received',        |
+|                     | 'master_wait_condition': 'WaitConditionTimeout: resources.master_wait_condition: 0 of 1 received'}                   |
+| api_address         | http://:8080                                                                                                         |
+| coe_version         | v1.3.7                                                                                                               |
+| master_addresses    | ['192.168.232.129']                                                                                                  |
+| create_timeout      | 60                                                                                                                   |
+| node_addresses      | []                                                                                                                   |
+| master_count        | 1                                                                                                                    |
+| container_version   | 1.12.3                                                                                                               |
+| node_count          | 1                                                                                                                    |
++---------------------+----------------------------------------------------------------------------------------------------------------------+

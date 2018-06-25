@@ -1,0 +1,35 @@
+# magnum cluster-template-show k8s_template
++-----------------------+--------------------------------------+
+| Property              | Value                                |
++-----------------------+--------------------------------------+
+| insecure_registry     | -                                    |
+| labels                | {}                                   |
+| updated_at            | -                                    |
+| floating_ip_enabled   | True                                 |
+| fixed_subnet          | -                                    |
+| master_flavor_id      | m1.magnum                            |
+| uuid                  | 0f1fb1bf-7e34-4c05-8a66-062392817c5f |
+| no_proxy              | -                                    |
+| https_proxy           | -                                    |
+| tls_disabled          | True                                 |
+| keypair_id            | default                              |
+| public                | False                                |
+| http_proxy            | -                                    |
+| docker_volume_size    | 5                                    |
+| server_type           | vm                                   |
+| external_network_id   | floating                             |
+| cluster_distro        | opensuse                             |
+| image_id              | openstack-magnum-k8s-image           |
+| volume_driver         | -                                    |
+| registry_enabled      | False                                |
+| docker_storage_driver | devicemapper                         |
+| apiserver_port        | -                                    |
+| name                  | k8s_template                         |
+| created_at            | 2017-05-17T13:53:10+00:00            |
+| network_driver        | flannel                              |
+| fixed_network         | -                                    |
+| coe                   | kubernetes                           |
+| flavor_id             | m1.magnum                            |
+| master_lb_enabled     | False                                |
+| dns_nameserver        | 8.8.8.8                              |
++-----------------------+--------------------------------------+

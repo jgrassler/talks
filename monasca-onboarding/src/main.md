@@ -71,7 +71,7 @@ and tools. If you are not, please read the
 
   * Fault tolerant
 
-  * High Performance
+  * Highly performant
 
   * Multi-tenant
 
@@ -146,8 +146,6 @@ We have various places where we keep the documentation for Monasca:
 
 * https://docs.openstack.org/monasca-api
 
-* https://docs.openstack.org/monasca-log-api
-
 * https://wiki.openstack.org/wiki/Monasca
 
 * http://monasca.io/
@@ -162,20 +160,18 @@ directly from the `monasca-api` and `monasca-log-api` repositories.
 
 * Fujitsu
 
-* HPE
-
-* OP5
+* SUSE
 
 * StackHPC
 
-* SUSE
+* Universidade Federal de Campina Grande
 
 <!--
 
 ## Main Contributors
 
-The main contributors to Monasca are Fujitsu, HPE, OP5, StackHPC and SUSE at
-the moment.
+The main contributors to Monasca are Fujitsu, StackHPC, SUSE and Universidade
+Federal de Campina Grande at the moment.
 
 -->
 
@@ -248,8 +244,8 @@ defined runtime state such as alarm definitions.
   * Contains data model for configuration database
     (`monasca_api/common/repositories`)
 
-  * Contains database migrations for configuration database (being added in
-    OpenStack Rocky)
+  * Contains database migrations for configuration database
+    (`monasca_api/db`)
 
   * Deprecated Java implementation: ignore when contributing
 
@@ -281,59 +277,12 @@ repository:
 3) It contains the data model for the configuration database that is used by
    various Monasca services. Whenever you add or remove tables or columns you
    will need to edit the modules in the `monasca_api/common/repositories`
-   directory.
-
-4) As of OpenStack's Rocky release, `monasca-api` will contain the Alembic
-   migrations for changes to the configuration database. We will look at that
-   in detail on the next slide.
+   directory. You should also create corresponding Alembic migration scripts.
 
 There are two implementations of `monasca-api` in that repository: one in
 Python and one in Java. Nowadays everybody uses the Python implementation and
 we deprecated the Java one. So you won't need to target the Java implementation
 with your contributions.
-
--->
-
-## Creating Database Migrations
-
-* Generate skeleton revision
-
-```
-$ include(cmd/alembic-newrevision.sh)include(output/alembic-newrevision)
-```
-
-* Edit revision
-
-```
-include(cmd/edit-revision.sh)
-```
-
-<!--
-
-## Creating Database Migrations
-
-If you have made changes to the data model, you will also need to create a
-database migration.
-
-These database migrations allow operators to apply your changes to an existing
-database.
-
-We use [Alembic](http://alembic.zzzcomputing.com) for this.
-
-Run the following commands on your Devstack instance to generate a new skeleton
-migration:
-
-```
-$ include(cmd/alembic-newrevision.sh)include(output/alembic-newrevision)
-```
-
-`alembic` will output the newly created revision's file name.
-
-Add your data model changes to the `upgrade()` method in this file.
-
-Please also add code that removes your changes to the `downgrade()` method.
-
-Otherwise people will not be able to revert migrations later.
 
 -->
 
@@ -359,6 +308,10 @@ Another crucial component is the Monasca agent.
 
   * https://github.com/openstack/monasca-agent
 
+* Documentation
+
+  * https://github.com/openstack/monasca-agent/blob/master/README.rst
+
 * Purpose
 
   * Collect metrics on monitored systems and forward them to `monasca-api`
@@ -374,8 +327,6 @@ Another crucial component is the Monasca agent.
 
   * Please create both if you add a new check.
 
-  * Detailed documentation available in README
-
 <!--
 
 You will find the Monasca agent in the
@@ -384,13 +335,6 @@ You will find the Monasca agent in the
 The agent is the boots-on-the-ground component of Monasca: it runs on the
 systems being monitored by Monasca, where it collects metrics and forwards them
 to monasca-api.
-
-Please note that it only collects metrics. For logs you need a separate agent.
-The most common is
-[Logstash](https://github.com/logstash-plugins/logstash-output-monasca_log_api)
-with the Monasca output plugin, but there are Monasca output plugins for
-[fluentd](https://www.fluentd.org/) and [beaver](https://github.com/python-beaver)
-as well.
 
 Custom plugins for metrics specific to your deployment can also be easily
 integrated: there are magic directories where an operator can simply drop them.
@@ -433,6 +377,10 @@ official and "magic directory" plugins in there.
 * Repository
 
   * https://github.com/openstack/python-monascaclient
+
+* Documentation
+
+  * https://docs.openstack.org/python-monascaclient
 
 * Purpose
 
@@ -487,6 +435,7 @@ as well if you make changes to the Metrics API.
   * Visualizing alarms
 
   * Provide links to metrics and log dashboards
+    (integration with *Grafana* and *Kibana*)
 
 <!--
 
@@ -519,7 +468,7 @@ are used to visualize metrics and logs, respectively.
 
 * Repository
 
-  * N/A (third party component; Apache Kafka)
+  * N/A (third party component; *Apache Kafka*)
 
 * Purpose
 
@@ -547,9 +496,64 @@ thresholds are exceeded).
 
 -->
 
+## Threshold Engine (`monasca-thresh`)
+
+![Treshold Engine](img/architecture7.Png)
+
+## Threshold Engine (`monasca-thresh`)
+
+* Repository
+
+  * https://github.com/openstack/monasca-thresh
+
+* Purpose
+
+  * Listen in on metrics and check them against alarm thresholds
+
+  * Produces messages for `monasca-notification` if thresholds exceeded
+
+* Development Information
+
+  * Implemented in Java
+
+  * Contributions may entail changes to `monasca-common`
+
+  * Uses *Apache Storm* for processing metrics
+
+<!--
+
+## Threshold Engine (`monasca-thresh`)
+
+The other side of notification is taken care of by the Monasca Threshold
+engine. You will find this component in the
+[monasca-thresh](https://github.com/openstack/monasca-thresh) repository.
+
+This component listens in on metrics as they rush by on the message queue and
+checks whether they exceed any alarm thresholds. If they do, `monasca-thresh`
+publishes an alarm to the message queue. That message is then consumed by
+`monasca-notification`. At the same time the alarm will be recorded in the
+Monasca database so it can be visualized in the Monasca UI.
+
+From a developer's point of view, `monasca-thresh` is a bit of an odd duck:
+it's one of the services that is entirely implemented in Java with no Python
+implementation existing at the moment.
+
+`monasca-thresh` uses some shared code from the Java part of the
+`monasca-common` library, so you may have to modify `monasca-common` as well if
+you contribute code to `monasca-thresh`.
+
+Last but not least, `monasca-thresh` does not do the heavy lifting all by
+itself. Instead, it uses Apache Storm to process metrics.
+
+-->
+
+## Threshold Engine (`monasca-thresh`)
+
+![Treshold Engine](img/architecture7.Png)
+
 ## Notification Engine (`monasca-notification`)
 
-![Notification Engine](img/architecture7.Png)
+![Notification Engine](img/architecture8.Png)
 
 ## Notification Engine (`monasca-notification`)
 
@@ -598,62 +602,7 @@ configuration file, `notification.yaml`.
 
 ## Notification Engine (`monasca-notification`)
 
-![Notification Engine](img/architecture7.Png)
-
-## Threshold Engine (`monasca-thresh`)
-
-![Treshold Engine](img/architecture8.Png)
-
-## Threshold Engine (`monasca-thresh`)
-
-* Repository
-
-  * https://github.com/openstack/monasca-thresh
-
-* Purpose
-
-  * Listen in on metrics and check them against alarm thresholds
-
-  * Produces messages for `monasca-notification` if thresholds exceeded
-
-* Development Information
-
-  * Implemented in Java
-
-  * Contributions may entail changes to `monasca-common`
-
-  * Uses Apache Storm for processing metrics
-
-<!--
-
-## Threshold Engine (`monasca-thresh`)
-
-The other side of notification is taken care of by the Monasca Threshold
-engine. You will find this component in the
-[monasca-thresh](https://github.com/openstack/monasca-thresh) repository.
-
-This component listens in on metrics as they rush by on the message queue and
-checks whether they exceed any alarm thresholds. If they do, `monasca-thresh`
-publishes an alarm to the message queue. That message is then consumed by
-`monasca-notification`. At the same time the alarm will be recorded in the
-Monasca database so it can be visualized in the Monasca UI.
-
-From a developer's point of view, `monasca-thresh` is a bit of an odd duck:
-it's one of the services that is entirely implemented in Java with no Python
-implementation existing at the moment.
-
-`monasca-thresh` uses some shared code from the Java part of the
-`monasca-common` library, so you may have to modify `monasca-common` as well if
-you contribute code to `monasca-thresh`.
-
-Last but not least, `monasca-thresh` does not do the heavy lifting all by
-itself. Instead, it uses Apache Storm to process metrics.
-
--->
-
-## Threshold Engine (`monasca-thresh`)
-
-![Treshold Engine](img/architecture8.Png)
+![Notification Engine](img/architecture8.Png)
 
 ## Transform Engine (`monasca-transform`)
 
@@ -667,7 +616,7 @@ itself. Instead, it uses Apache Storm to process metrics.
 
 * Purpose
 
-  * Republish transformed (usually aggregated) metrics as synthetic new metrics
+  * Publish transformed (usually aggregated) metrics as synthetic new metrics
 
 <!--
 
@@ -678,9 +627,8 @@ You will find it in the
 [monasca-transform](https://github.com/openstack/monasca-transform) repository.
 
 This component takes more of an active role: it consumes metrics the Metrics
-API publishes on the message queue and republishes the metrics themselves plus
-the synthetic metrics that result from performing various transformations on
-them.
+API publishes on the message queue and publishes the synthetic metrics that
+result from performing various transformations on them.
 
 The most common transformation is aggregating individual metrics into
 bigger-picture metrics (e.g. summing up the `m1.xlarge` VMs on each compute
@@ -749,7 +697,7 @@ if you contribute to `monasca-persister`.
 
 * Repository
 
-  * N/A (third party component; can be Cassandra, InfluxDB or Vertica)
+  * N/A (third party component; can be *InfluxDB*, *Apache Cassandra* or *Vertica*)
 
 * Purpose
 
@@ -794,13 +742,16 @@ though.
 
 include(src/logging.md)
 
-## Tutorial
+## Hands-On Workshop
 
 * Interactive Jupyter notebook
 
 * Demonstrates main Monasca functionalities
 
-* https://github.com/witekest/monasca-bootcamp/
+* https://github.com/martinchacon/monasca-bootcamp/
+
+* Today, 4:20pm - 5:50pm  
+  Hall 7 - Level 1 - 7.1a / NY1
 
 <!--
 
@@ -1026,7 +977,9 @@ You can get things done fairly quickly in Monasca.
 
 * We use StoryBoard!
 
-  * Bugs
+  * [Priortized features](https://storyboard.openstack.org/#!/board/111)
+
+  * [Bugs](https://storyboard.openstack.org/#!/board/114)
 
   * Feature requests
 
@@ -1056,11 +1009,11 @@ If you think something is missing from Monasca, take a look at this repository
 
 * Project priorities
 
-  - http://specs.openstack.org/openstack/monasca-specs/priorities/rocky-priorities.html
+  - http://specs.openstack.org/openstack/monasca-specs/priorities/stein-priorities.html
 
-* Important Tasks and Reviews
+* Kanban Board
 
-  - https://storyboard.openstack.org/#!/board/60
+  - https://storyboard.openstack.org/#!/board/111
 
 <!--
 
@@ -1079,8 +1032,11 @@ You will often find discussion and background on the stories we maintain there.
 
 * Reviews
 
-* Bugfixes and Bug Reports
-  https://storyboard.openstack.org/#!/worklist/213
+* Backlog  
+  https://storyboard.openstack.org/#!/board/111
+
+* Bugfixes and Bug Reports  
+  https://storyboard.openstack.org/#!/board/114
 
 * Community wide goals
 

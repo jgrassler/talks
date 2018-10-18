@@ -1,6 +1,6 @@
-# Magnum Debugging 101
+# Monasca - Project Onboarding
 
-This repository contains the *Monasca onboarding* presentation.
+This repository contains the *Monasca - Project Onboarding* presentation.
 
 It is built using [odpdown](https://github.com/thorstenb/odpdown). You can
 rebuild them by running `make`. Building requires `make`, `pandoc`, `odpdown`,
@@ -24,8 +24,8 @@ to create a distributable tarball.
   macros (`include(<filename>)` is probably the most useful.
 
 * `img/` shared images for use in both presentations. Use paths relative to the
-  repository's root directory to reference them. *.dia will automatically
-  converted to *.PNG by the Makefile (use a `.png` extension for PNG files that
+  repository's root directory to reference them. `*.dia` will be automatically
+  converted to `*.PNG` by the Makefile (use a `.png` extension for PNG files that
   do not need conversion).
 
 * `cmd/` commands as they appear on slides.

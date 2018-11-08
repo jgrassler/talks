@@ -1077,6 +1077,12 @@ As for things you can help with...the usual:
 
 -->
 
+## Monitoring as a Service in HPC Cloud
+
+Wednesday, November 14, 3:30pm-3:40pm
+
+Level 2 - Marketplace Demo Theater
+
 # Questions?
 
 # Thank You!
